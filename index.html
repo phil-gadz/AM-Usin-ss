@@ -167,9 +167,99 @@
     }
 
     /* freeze page while modal open: handled via JS (we set top and add class) */
-    body.modal-open{ position:fixed; left:0; right:0; overflow:hidden; }
+    .modal-open{ position:fixed; left:0; right:0; overflow:hidden; }
   </style>
 </head>
+
+<script>
+/*
+  Auto-reload after deploy
+  - vérifie périodiquement l'ETag ou Last-Modified de la page racine (ou /manifest.json)
+  - si changement détecté -> reload.
+  - fallback : on récupère le HTML et on calcule un petit hash si le serveur ne renvoie pas d'headers.
+*/
+
+(function(){
+  const CHECK_URL = '/index.html'; // ou '/manifest.json' si tu préfères
+  const INTERVAL_MS = 3 * 1000;   // fréquence de vérif (15s). Augmente si tu veux moins de requêtes.
+  let knownTag = null;
+  let knownLM = null;
+  let knownHash = null;
+
+  // simple hash pour fallback (pas crypto, juste pour détecter changement)
+  function simpleHash(s){
+    let h = 2166136261 >>> 0;
+    for(let i=0;i<s.length;i++){
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619) >>> 0;
+    }
+    return h.toString(36);
+  }
+
+  async function checkOnce(){
+    try{
+      // on essaie d'abord HEAD pour être light. Si HEAD renvoie pas les headers, on GET.
+      let res = await fetch(CHECK_URL, { method: 'HEAD', cache: 'no-store' });
+      if(!res.ok){
+        // fallback GET
+        res = await fetch(CHECK_URL, { method: 'GET', cache: 'no-store' });
+      }
+
+      // headers à surveiller
+      const etag = res.headers.get('etag');
+      const lm = res.headers.get('last-modified');
+
+      if(etag){
+        if(knownTag && knownTag !== etag){
+          console.log('Auto-reload: ETag changed', knownTag, '→', etag);
+          return reloadSafe();
+        }
+        knownTag = knownTag || etag;
+        return;
+      }
+
+      if(lm){
+        if(knownLM && knownLM !== lm){
+          console.log('Auto-reload: Last-Modified changed', knownLM, '→', lm);
+          return reloadSafe();
+        }
+        knownLM = knownLM || lm;
+        return;
+      }
+
+      // fallback : on lit le body et on compare hash
+      if(res.bodyUsed === false){
+        const txt = await res.text();
+        const h = simpleHash(txt);
+        if(knownHash && knownHash !== h){
+          console.log('Auto-reload: body hash changed', knownHash, '→', h);
+          return reloadSafe();
+        }
+        knownHash = knownHash || h;
+      }
+    }catch(err){
+      // silent fail (réseau, CDN momentané). On retente au prochain interval.
+      // console.warn('checkOnce error', err);
+    }
+  }
+
+  // reload sécurisé : bypass cache en ajoutant timestamp au href
+  function reloadSafe(){
+    // if a modal / editing state exists, you could optionally prompt user
+    const url = new URL(window.location.href);
+    url.searchParams.set('_r', Date.now());
+    window.location.replace(url.toString());
+  }
+
+  // démarrer après chargement complet
+  window.addEventListener('load', ()=>{
+    // run initial check to seed knownTag/LM/hash
+    checkOnce();
+    setInterval(checkOnce, INTERVAL_MS);
+  });
+})();
+</script>
+
 <body>
   <canvas id="particles"></canvas>
 
@@ -548,5 +638,6 @@
   </script>
 </body>
 </html>
+
 
 
