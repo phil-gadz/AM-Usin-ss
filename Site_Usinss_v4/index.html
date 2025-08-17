@@ -281,363 +281,23 @@
 
   <div class="footer">224 Corp.</div>
 
-  <script>
-    /* ---------- GLITCH ---------- */
-    const logoEl = document.querySelector('.logo');
-    function triggerGlitch(){
-      if(!logoEl) return;
-      logoEl.classList.add('glitch');
-      setTimeout(()=>{ logoEl.classList.remove('glitch'); setTimeout(triggerGlitch, 200 + Math.random() * 1300); }, 120);
-    }
-    triggerGlitch();
-
-    /* ---------- PARTICLES (DPR-aware) ---------- */
-    const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    let mouseX = null, mouseY = null;
-    function resizeCanvas(){
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = window.innerWidth + 'px';
-      canvas.style.height = window.innerHeight + 'px';
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    window.addEventListener('mousemove', e=>{ mouseX = e.clientX; mouseY = e.clientY; });
-
-    function initParticles(){
-      particles = [];
-      for(let i=0;i<90;i++){
-        particles.push({ x: Math.random()*window.innerWidth, y: Math.random()*window.innerHeight, size: Math.random()*1.8+0.6, speed: Math.random()*0.35+0.12, opacity: Math.random()*0.5+0.3 });
-      }
-    }
-    function drawParticles(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      particles.forEach(p=>{
-        ctx.beginPath();
-        ctx.shadowBlur = 15; ctx.shadowColor = 'rgba(255,0,255,0.8)';
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-        ctx.fillStyle = `rgba(255, 100, 255, ${p.opacity})`;
-        ctx.fill();
-        p.y -= p.speed;
-        if(mouseX !== null && mouseY !== null){
-          let dx = mouseX - p.x, dy = mouseY - p.y;
-          let dist = Math.sqrt(dx*dx + dy*dy);
-          if(dist < 100){ p.x -= dx * 0.002; p.y -= dy * 0.002; }
-        }
-        if(p.y < -p.size){ p.y = window.innerHeight + p.size; p.x = Math.random()*window.innerWidth; }
-      });
-      requestAnimationFrame(drawParticles);
-    }
-    initParticles();
-    drawParticles();
-
-    /* ---------- CALENDAR & DATA ---------- */
-    const days = ["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"];
-    const monthSelect = document.getElementById('month-select');
-    const colsSelect = document.getElementById('cols-select');
-    const calendarContainer = document.getElementById('calendar');
-    const monthTitle = document.getElementById('month-title');
-    const currentYear = 2025;
-    let daysPerRow = parseInt(colsSelect.value,10) || 3;
-
-    const eventsData = {
-      /* --- SEPTEMBRE --- */
-      "2025-09-01":[{time:"18:45",title:"Remise des num'ss",color:"blue"},{time:"19:15",title:"Flam'ss",color:"blue"}],
-      "2025-09-02":[{time:"12:40",title:"Remise des Zagrises",color:"blue"},{time:"20:00",title:"Prise en m'ss",color:"red"}],
-      "2025-09-03":[{time:"20:00",title:"Nuit du Carn'ss",color:"blue"}],
-      "2025-09-04":[{time:"20:00",title:"Bottage d'oc'ss",color:"blue"}],
-      "2025-09-05":[{time:"20:00",title:"Fin'ss Archis",color:"blue"}],
-      "2025-09-06":[{time:"",title:"Wix P3",color:"pink"}],
-      "2025-09-07":[{time:"",title:"Wix P3",color:"pink"}],
-      "2025-09-08":[{time:"20:00",title:"Nuit des Sacqués",color:"blue"}],
-      "2025-09-09":[{time:"Aprem",title:"Essayage Zag",color:"blue"},{time:"20:00",title:"Chalon'ss/Boquette",color:"blue"}],
-      "2025-09-10":[{time:"20:00",title:"Mort des Trad'ss",color:"blue"}],
-      "2025-09-11":[{time:"Aprem",title:"Visiste Learning Center",color:"blue"},{time:"20:00",title:"Manip Banquet",color:"blue"}],
-      "2025-09-12":[{time:"20:00",title:"Prez UAI",color:"blue"}],
-      "2025-09-15":[{time:"20:00",title:"KIN/Clun'ss",color:"blue"}],
-      "2025-09-16":[{time:"",title:"UAI",color:"yellow",textBlack:true}],
-      "2025-09-17":[{time:"Aprem",title:"Solidarité Béthune",color:"blue"},{time:"20:00",title:"Hypo-bucque",color:"blue"}],
-      "2025-09-18":[{time:"20:00",title:"Prez Foy'ss",color:"blue"}],
-      "2025-09-19":[{time:"20:00",title:"Déreunssage/Perm'ss/Porte-perm'ss",color:"blue"}],
-      "2025-09-22":[{time:"20:00",title:"Birse/P3",color:"blue"}],
-      "2025-09-23":[{time:"",title:"UAI",color:"yellow",textBlack:true}],
-      "2025-09-24":[{time:"20:00",title:"Thuyssage Chop'ss",color:"blue"}],
-      "2025-09-25":[{time:"20:00",title:"Manip Gorg'ss",color:"blue"}],
-      "2025-09-26":[{time:"20:00",title:"Lettre à soi-même",color:"blue"}],
-      "2025-09-27":[{time:"Soir",title:"Fin'ss Archis Chop'ss",color:"blue"}],
-      "2025-09-28":[{time:"Aprem",title:"Chop'ss",color:"red"}],
-      "2025-09-29":[{time:"20:00",title:"Manip AMJE",color:"blue"}],
-      "2025-09-30":[{time:"",title:"UAI",color:"yellow",textBlack:true}],
-      /* --- OCTOBRE / NOVEMBRE --- (les mêmes données que précédemment) */
-      "2025-10-01":[{time:"20:00",title:"Hypo-bucque 2",color:"blue"}],
-      "2025-10-02":[{time:"06:00",title:"Hypo-moütardes",color:"blue"},{time:"20:00",title:"Bordel'ss/Siber'ss/Knack",color:"blue"}],
-      "2025-10-03":[{time:"20:00",title:"Nuit des justiciers",color:"blue"}],
-      "2025-10-06":[{time:"",title:"Mise HU",color:"red"}],
-      "2025-10-09":[{time:"20:00",title:"Nuit de la glacière",color:"blue"}],
-      "2025-10-13":[{time:"",title:"Remise en usin'ss",color:"red"}],
-      "2025-10-14":[{time:"20:00",title:"14 oct./125 ans",color:"blue"}],
-      "2025-10-15":[{time:"20:00",title:"Lettre aux Archis",color:"blue"}],
-      "2025-10-16":[{time:"20:00",title:"Nuit des Atel'ss",color:"blue"}],
-      "2025-10-17":[{time:"20:00",title:"Nuit de la Rez/CC Trad'ss",color:"blue"}],
-      "2025-10-20":[{time:"20:00",title:"Monôme de Birse/Tap'ss Foy'ss",color:"blue"}],
-      "2025-10-21":[{time:"",title:"UAI",color:"yellow",textBlack:true}],
-      "2025-10-22":[{time:"20:00",title:"Nuit des justiciers 2",color:"blue"}],
-      "2025-10-23":[{time:"20:00",title:"Manip Bonsergent",color:"blue"}],
-      "2025-10-24":[{time:"20:00",title:"Nuit des Sout'ss",color:"red"}],
-      "2025-10-25":[{time:"",title:"DKL",color:"grey"}],
-      "2025-10-26":[{time:"",title:"DKL",color:"grey"}],
-      "2025-10-27":[{time:"",title:"DKL",color:"grey"}],
-      "2025-10-28":[{time:"",title:"DKL",color:"grey"}],
-      "2025-10-29":[{time:"",title:"DKL",color:"grey"}],
-      "2025-10-30":[{time:"",title:"DKL",color:"grey"}],
-      "2025-10-31":[{time:"",title:"DKL",color:"grey"}],
-      "2025-11-01":[{time:"",title:"DKL",color:"grey"}],
-      "2025-11-02":[{time:"",title:"DKL",color:"grey"}],
-      "2025-11-03":[{time:"20:00",title:"Prez Fignoss",color:"blue"}],
-      "2025-11-04":[{time:"",title:"UAI",color:"yellow",textBlack:true}],
-      "2025-11-05":[{time:"20:00",title:"Pal'ss SE/Prom'ss",color:"blue"}],
-      "2025-11-06":[{time:"20:00",title:"Comit'ss Paillards",color:"blue"}],
-      "2025-11-07":[{time:"20:00",title:"Pal'ss Micro-Par'ss",color:"blue"}],
-      "2025-11-08":[{time:"",title:"Wix Micro-Par'ss",color:"pink"}],
-      "2025-11-09":[{time:"",title:"Wix Micro-Par'ss",color:"pink"}],
-      "2025-11-10":[{time:"20:00",title:"Double Pal'ss/Amphi Ayat'ss/Nuit de l'Ours",color:"blue"}],
-      "2025-11-11":[{time:"06:00",title:"Pal'ss Taper la phase",color:"blue"},{time:"12:00",title:"Pal'ss",color:"blue"},{time:"14:00",title:"11 Nov.",color:"blue"},{time:"20:00",title:"Pal'ss dans les Sout'ss/Brûlage de Carn'ss",color:"blue"}],
-      "2025-11-12":[{time:"06:00",title:"Pal'ss rébellion des washs",color:"blue"},{time:"20:00",title:"St El'ss",color:"red"}],
-      "2025-11-13":[{time:"Jusqu'au soir",title:"St El'ss",color:"red"},{time:"20:00",title:"Dernière chouille de prom'ss",color:"blue"}],
-      "2025-11-14":[{time:"20:00",title:"Fin'ss de remise de fam'ss/Soirée de zocquage",color:"blue"}],
-      "2025-11-15":[{time:"",title:"Gnasse Fignoss",color:"orange"}],
-      "2025-11-16":[{time:"",title:"Gnasse Fignoss",color:"orange"}],
-      "2025-11-17":[{time:"",title:"Gnasse Fignoss",color:"orange"}],
-      "2025-11-18":[{time:"",title:"Gnasse Fignoss",color:"orange"}],
-      "2025-11-19":[{time:"",title:"Gnasse Fignoss",color:"orange"}],
-      "2025-11-20":[{time:"",title:"Gnasse Fignoss",color:"orange"}],
-      "2025-11-21":[{time:"",title:"Gnasse Fignoss",color:"orange"}],
-      "2025-11-22":[{time:"",title:"Gnasse Fignoss",color:"orange"}],
-      "2025-11-23":[{time:"",title:"Gnasse Fignoss",color:"orange"}],
-      "2025-11-24":[{time:"",title:"Gnasse Fignoss",color:"orange"}],
-      "2025-11-25":[{time:"",title:"Gnasse Fignoss",color:"orange"}],
-      "2025-11-26":[{time:"",title:"Gnasse Fignoss",color:"orange"}],
-      "2025-11-27":[{time:"",title:"Gnasse Fignoss",color:"orange"}],
-      "2025-11-28":[{time:"Jusqu'au soir",title:"Gnasse Fignoss",color:"orange"},{time:"20:00",title:"Bapt'ss",color:"red"}],
-      "2025-11-29":[{time:"",title:"Bapt'ss V2/Fignoss",color:"green"}],
-      "2025-11-30":[]
-    };
-
-    function generateCalendar(month, cols){
-      calendarContainer.innerHTML = '';
-      monthTitle.textContent = `${monthSelect.options[monthSelect.selectedIndex].text} ${currentYear}`;
-      const daysInMonth = new Date(currentYear, month, 0).getDate();
-      let dayCounter = 1;
-      while(dayCounter <= daysInMonth){
-        const weekDiv = document.createElement('div'); weekDiv.className = 'week';
-        weekDiv.style.setProperty('--cols', cols);
-        const rowDayNumbers = [];
-        for(let i=0;i<cols;i++){
-          if(dayCounter <= daysInMonth){ rowDayNumbers.push(dayCounter); dayCounter++; } else { rowDayNumbers.push(null); }
-        }
-        // headers
-        for(let i=0;i<cols;i++){
-          const header = document.createElement('div'); header.className = 'header';
-          const d = rowDayNumbers[i];
-          if(d){
-            const weekday = new Date(currentYear, month-1, d).getDay();
-            const dayName = days[(weekday + 6) % 7];
-            header.textContent = `${dayName} ${String(d).padStart(2,'0')}`;
-          } else { header.textContent = ''; header.style.visibility = 'hidden'; }
-          weekDiv.appendChild(header);
-        }
-        // days
-        for(let i=0;i<cols;i++){
-          const dayBox = document.createElement('div'); dayBox.className = 'day'; dayBox.setAttribute('onclick','zoom(this)');
-          const d = rowDayNumbers[i];
-          if(d && d>0){
-            const dateKey = `${currentYear}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-            const events = eventsData[dateKey];
-            if(events && events.length){
-              events.forEach(evData=>{
-                if(!evData || !evData.title) return;
-                const ev = document.createElement('div'); ev.className = 'event';
-                const colorClass = evData.color ? evData.color : 'blue';
-                ev.classList.add(colorClass);
-                if(evData.textBlack) ev.classList.add('text-black');
-                const timeDiv = document.createElement('div'); timeDiv.className = 'time'; timeDiv.innerText = evData.time ? evData.time : '';
-                const titleDiv = document.createElement('div'); titleDiv.className = 'title'; titleDiv.innerText = evData.title;
-                ev.appendChild(timeDiv); ev.appendChild(titleDiv);
-                if(evData.description){ const desc = document.createElement('div'); desc.className='description'; desc.innerText = evData.description; ev.appendChild(desc); }
-                dayBox.appendChild(ev);
-              });
-            }
-          }
-          weekDiv.appendChild(dayBox);
-        }
-        calendarContainer.appendChild(weekDiv);
-      }
-    }
-
-    monthSelect.addEventListener('change', ()=> generateCalendar(parseInt(monthSelect.value,10), daysPerRow));
-    colsSelect.addEventListener('change', ()=> { const v = parseInt(colsSelect.value,10); if(!isNaN(v) && v>=3 && v<=7){ daysPerRow = v; generateCalendar(parseInt(monthSelect.value,10), daysPerRow); }});
-    generateCalendar(parseInt(monthSelect.value,10), daysPerRow);
-
-    /* ---------- ZOOM modal (freeze page scroll while open) ---------- */
-    const overlay = document.getElementById('overlay');
-    let zoomState = { open:false, origEl:null, scrollY:0, outer:null, closeBtn:null };
-
-    function zoom(el){
-      if(zoomState.open) return;
-      zoomState.open = true;
-      zoomState.origEl = el;
-      // save scroll pos & freeze body by fixing it
-      zoomState.scrollY = window.scrollY || window.pageYOffset || 0;
-      document.body.classList.add('modal-open');
-      document.body.style.top = `-${zoomState.scrollY}px`;
-
-      overlay.style.display = 'block';
-
-      const rect = el.getBoundingClientRect();
-      const outer = document.createElement('div'); outer.className = 'zoom-outer';
-      const inner = document.createElement('div'); inner.className = 'zoom-inner';
-      const clone = el.cloneNode(true);
-      clone.style.pointerEvents = 'auto';
-      clone.style.background = 'transparent';
-      clone.style.width = rect.width + 'px';
-      clone.style.boxSizing = 'border-box';
-      inner.appendChild(clone);
-
-      inner.style.left = rect.left + 'px';
-      inner.style.top = rect.top + 'px';
-      inner.style.width = rect.width + 'px';
-      inner.style.height = rect.height + 'px';
-      inner.style.transform = 'translate(0,0) scale(1)';
-      inner.style.zIndex = 3100;
-      inner.style.borderRadius = '14px';
-      inner.style.overflow = 'hidden';
-
-      const closeBtn = document.createElement('button');
-      closeBtn.className = 'zoom-fixed-close';
-      closeBtn.innerText = 'Fermer';
-      closeBtn.onclick = ()=> closeZoom();
-
-      outer.appendChild(inner);
-      document.body.appendChild(outer);
-      document.body.appendChild(closeBtn);
-
-      // target zoom (slightly reduced)
-      const viewportW = window.innerWidth;
-      const viewportH = window.innerHeight;
-      const targetMaxW = Math.min(viewportW * 0.86, 900);
-      const targetMaxH = Math.min(viewportH * 0.86, viewportH - 80);
-      const scaleX = targetMaxW / rect.width;
-      const scaleY = targetMaxH / rect.height;
-      const scale = Math.min(scaleX, scaleY);
-
-      const rectCenterX = rect.left + rect.width / 2;
-      const rectCenterY = rect.top + rect.height / 2;
-      const viewportCenterX = viewportW / 2;
-      const viewportCenterY = viewportH / 2;
-      const translateX = viewportCenterX - rectCenterX;
-      const translateY = viewportCenterY - rectCenterY;
-
-      zoomState.outer = outer;
-      zoomState.closeBtn = closeBtn;
-
-      requestAnimationFrame(()=> {
-        inner.style.transition = 'transform 420ms cubic-bezier(.22,.9,.32,1), left .42s, top .42s, width .42s, height .42s';
-        inner.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-      });
-    }
-
-    function closeZoom(){
-      if(!zoomState.open) return;
-      overlay.style.display = 'none';
-      const outer = zoomState.outer;
-      const inner = outer ? outer.querySelector('.zoom-inner') : null;
-      if(zoomState.origEl && inner){
-        const rect = zoomState.origEl.getBoundingClientRect();
-        inner.style.transition = 'transform 320ms ease-in, left .32s, top .32s, width .32s, height .32s';
-        inner.style.left = rect.left + 'px';
-        inner.style.top = rect.top + 'px';
-        inner.style.width = rect.width + 'px';
-        inner.style.height = rect.height + 'px';
-        inner.style.transform = 'translate(0,0) scale(1)';
-        setTimeout(()=> {
-          if(zoomState.outer && zoomState.outer.parentNode) zoomState.outer.parentNode.removeChild(zoomState.outer);
-          if(zoomState.closeBtn && zoomState.closeBtn.parentNode) zoomState.closeBtn.parentNode.removeChild(zoomState.closeBtn);
-          // restore page scroll
-          document.body.classList.remove('modal-open');
-          document.body.style.top = '';
-          window.scrollTo(0, zoomState.scrollY || 0);
-          zoomState = { open:false, origEl:null, scrollY:0, outer:null, closeBtn:null };
-        }, 360);
-      } else {
-        if(zoomState.outer && zoomState.outer.parentNode) zoomState.outer.parentNode.removeChild(zoomState.outer);
-        if(zoomState.closeBtn && zoomState.closeBtn.parentNode) zoomState.closeBtn.parentNode.removeChild(zoomState.closeBtn);
-        document.body.classList.remove('modal-open');
-        document.body.style.top = '';
-        window.scrollTo(0, zoomState.scrollY || 0);
-        zoomState = { open:false, origEl:null, scrollY:0, outer:null, closeBtn:null };
-      }
-    }
-
-    /* ---------- KRA editor / pass ---------- */
-    const kraMsgEl = document.getElementById('kra-msg');
-    const kraLastEl = document.getElementById('kra-last');
-    const editBtn = document.getElementById('kra-edit-btn');
-    const editorOverlay = document.getElementById('kra-editor-overlay');
-    const kraInput = document.getElementById('kra-input');
-    const saveBtn = document.getElementById('kra-save-btn');
-    const clearBtn = document.getElementById('kra-clear-btn');
-    const cancelBtn = document.getElementById('kra-cancel-btn');
-    const passOverlay = document.getElementById('kra-pass-overlay');
-    const passInput = document.getElementById('kra-pass-input');
-    const passOk = document.getElementById('kra-pass-ok');
-    const LOCAL_KEY = 'kra_current_v1';
-    const PASS = '123';
-
-    function renderKra(data){ if(!data || !data.text){ kraMsgEl.innerText = "Aucune info pour l'instant."; kraLastEl.innerText = "Dernière mise à jour: —"; return; } kraMsgEl.innerText = data.text; const d = new Date(data.ts || Date.now()); kraLastEl.innerText = `Dernière mise à jour: ${d.toLocaleString('fr-FR')}`; }
-    const stored = localStorage.getItem(LOCAL_KEY);
-    if(stored) try{ renderKra(JSON.parse(stored)); }catch(e){ console.warn(e); }
-    window.addEventListener('storage', ev=>{ if(ev.key===LOCAL_KEY) try{ renderKra(JSON.parse(ev.newValue)); }catch(e){ console.warn(e); }});
-    function openPass(){ passInput.value=''; passOverlay.style.display='flex'; passInput.focus(); }
-    function closePass(){ passOverlay.style.display='none'; }
-    editBtn.addEventListener('click', openPass);
-    passOk.addEventListener('click', ()=>{ const v = passInput.value || ''; if(v===PASS){ closePass(); openKraEditor(); } else { alert('PASS incorrect.'); passInput.value=''; passInput.focus(); }});
-    function openKraEditor(){ kraInput.value = kraMsgEl.innerText.includes("Aucune info") ? "" : kraMsgEl.innerText; editorOverlay.style.display='flex'; kraInput.focus(); }
-    function closeKraEditor(){ editorOverlay.style.display='none'; }
-    cancelBtn.addEventListener('click', closeKraEditor);
-    clearBtn.addEventListener('click', ()=> kraInput.value = '');
-    saveBtn.addEventListener('click', ()=> { const text = kraInput.value.trim(); const payload = { text: text || '', ts: Date.now() }; localStorage.setItem(LOCAL_KEY, JSON.stringify(payload)); renderKra(payload); closeKraEditor(); });
-    window.addEventListener('keydown', e=>{ if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); openPass(); }});
-
-    // overlay click closes zoom
-    document.getElementById('overlay').addEventListener('click', ()=>{ if(zoomState.open) closeZoom(); });
-
-    // defensive
-    document.documentElement.style.overflowX = 'hidden';
-    document.body.style.overflowX = 'hidden';
-  </script>
-
+  
 <script>
 (function(){
   const KRA_ENDPOINT = '/.netlify/functions/kra';
-  const SERVER_PASS = '123'; // change this to match KRA_PASS on Netlify
-  const LOCAL_KEY = 'kra_shared';
+  const SERVER_PASS = '123'; // doit matcher KRA_PASS dans Netlify env
+  const LOCAL_KEY = 'kra_current_v1'; // même key que le render existant
 
   async function fetchKraFromServer(){
     try{
       const r = await fetch(KRA_ENDPOINT);
-      if(!r.ok) throw new Error('fetch error');
+      if(!r.ok) throw new Error('fetch error ' + r.status);
       const json = await r.json();
       if(json && json.text !== undefined){
+        // store with the same key the page already listens to
         localStorage.setItem(LOCAL_KEY, JSON.stringify(json));
         if(typeof renderKra === 'function') {
           try { renderKra(json); } catch(e){ console.warn(e); }
-        } else {
-          const el = document.querySelector('[data-kra-display]');
-          if(el) el.textContent = json.text;
         }
       }
     }catch(e){
@@ -661,9 +321,6 @@
       localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
       if(typeof renderKra === 'function') {
         try { renderKra(data); } catch(e){ console.warn(e); }
-      } else {
-        const el = document.querySelector('[data-kra-display]');
-        if(el) el.textContent = data.text;
       }
       return data;
     }catch(e){
@@ -673,27 +330,43 @@
     }
   }
 
-  function initAttach(){
-    const saveBtn = document.querySelector('#kra-save, .kra-save, [data-kra-save]');
-    const kraInput = document.querySelector('#kra-input, .kra-input, [data-kra-input]');
-    if(saveBtn && kraInput){
-      saveBtn.addEventListener('click', async ()=> {
-        const text = kraInput.value.trim();
-        await saveKraToServer(text);
-        if(typeof closeKraEditor === 'function') {
-          try { closeKraEditor(); } catch(e){ console.warn(e); }
-        }
-      });
+  function overrideSaveHandler(){
+    // try several possible selectors to be robust
+    const saveBtn = document.getElementById('kra-save-btn') 
+                 || document.querySelector('[data-kra-save]') 
+                 || document.querySelector('.kra-save') 
+                 || document.querySelector('#kra-save');
+    const kraInput = document.getElementById('kra-input') 
+                  || document.querySelector('[data-kra-input]') 
+                  || document.querySelector('.kra-input') 
+                  || document.querySelector('#kra-input');
+    if(!saveBtn || !kraInput){
+      console.warn('Save button or input not found');
+      return;
     }
+
+    // override previous behavior: replace onclick/handlers so we POST to the server
+    saveBtn.onclick = async function(evt){
+      evt && evt.preventDefault && evt.preventDefault();
+      const text = (kraInput.value || '').trim();
+      await saveKraToServer(text);
+      if(typeof closeKraEditor === 'function'){
+        try { closeKraEditor(); } catch(e){ console.warn(e); }
+      }
+    };
   }
 
   document.addEventListener('DOMContentLoaded', ()=>{
-    initAttach();
+    overrideSaveHandler();
     fetchKraFromServer();
-    setInterval(fetchKraFromServer, 5000); // simple polling every 5s
+    setInterval(fetchKraFromServer, 5000);
   });
+
+  // expose for debugging in console
+  window._kra_debug = { fetchKraFromServer, saveKraToServer };
 })();
 </script>
+
 
 </body>
 </html>
