@@ -1,8 +1,8 @@
 // netlify/functions/kra.js
 const fetch = require('node-fetch');
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // Personal Access Token
-const REPO = process.env.GITHUB_REPO; // "owner/repo"
+const GITHUB_TOKEN = process.env.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; // Personal Access Token
+const REPO = process.env.phil-gadz/AM-Usin-ss; // "owner/repo"
 const FILE_PATH = process.env.GITHUB_FILE_PATH || 'kra.json'; // chemin dans le repo
 const BRANCH = process.env.GITHUB_BRANCH || 'main';
 const SERVER_PASS = process.env.KRA_PASS || '123'; // mot de passe serveur (change-le)
