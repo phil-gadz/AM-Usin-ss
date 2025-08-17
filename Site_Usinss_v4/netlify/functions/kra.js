@@ -1,11 +1,11 @@
 // netlify/functions/kra.js
 const fetch = require('node-fetch');
 
-const GITHUB_TOKEN = process.env.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; // Personal Access Token
-const REPO = process.env.phil-gadz/AM-Usin-ss; // "owner/repo"
-const FILE_PATH = process.env.GITHUB_FILE_PATH || 'kra.json'; // chemin dans le repo
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // token set in Netlify env
+const REPO = process.env.GITHUB_REPO; // e.g. "phil-gadz/AM-Usin-ss"
+const FILE_PATH = process.env.GITHUB_FILE_PATH || 'kra.json';
 const BRANCH = process.env.GITHUB_BRANCH || 'main';
-const SERVER_PASS = process.env.KRA_PASS || '123'; // mot de passe serveur (change-le)
+const SERVER_PASS = process.env.KRA_PASS || 'changeme';
 
 const API_ROOT = 'https://api.github.com';
 
@@ -56,7 +56,6 @@ exports.handler = async function(event) {
       const text = String(body.text || '');
       const payload = { text, ts: Date.now() };
 
-      // read file to get sha (if exists)
       const f = await getFile();
       const sha = f ? f.sha : undefined;
       await updateFile(JSON.stringify(payload, null, 2), sha);
@@ -70,3 +69,4 @@ exports.handler = async function(event) {
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
 };
+
