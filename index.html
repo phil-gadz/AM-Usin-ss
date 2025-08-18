@@ -85,30 +85,28 @@
     /* variante pour la KRA header : moins haut, plus large (horizontal) */
     .caf-button.kra{
       height:46px;
-      min-width:130px;
-      padding:8px 18px;
+      min-width:150px;    /* plus large horizontalement */
+      padding:8px 20px;
       font-size:1rem;
       border-radius:12px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      justify-self:end;
     }
 
-    /* === PLACEMENT : titre centré, bouton à gauche du titre (même ligne) === */
+    /* === PLACEMENT : bouton AU-DESSUS du titre, centré, espacement soigné === */
     .kra-header{
       position:relative;
       width:100%;
-      padding:6px 12px;
-      display:grid;
-      grid-template-columns: 1fr auto 1fr; /* left (button), center (title), right (spacer) */
+      padding:12px 12px;
+      display:flex;
+      flex-direction:column;
       align-items:center;
-      column-gap:20px;
+      justify-content:center;
+      gap:8px; /* espace vertical entre bouton et titre */
     }
 
     .kra-title{
-      grid-column:2;
-      justify-self:center;
       z-index:3;
       font-weight:900;
       font-size:1.25rem;
@@ -121,35 +119,20 @@
       text-align:center;
     }
 
-    /* bouton : dans la première colonne de la grille, aligné à droite pour se rapprocher du titre */
-    .kra-header > .caf-button.kra{
-      grid-column:1;
-      justify-self:end;
-      margin-right:24px; /* espace entre bouton et titre (ajuste si besoin) */
-      z-index:2;
-    }
+    /* small adjustment: make sure button visually sits just above title (not too far) */
+    .kra-header .caf-button.kra{ margin-bottom:4px; }
 
-    /* right spacer (vide) to keep title centered) */
-    .kra-header .kra-spacer{
-      grid-column:3;
-      width:1px; /* invisible, only to balance grid */
-      height:1px;
-      opacity:0;
-    }
-
-    /* responsive : réduire l'écart horizontal et la taille sur écrans moyens */
+    /* responsive : réduire la largeur et la hauteur sur écrans moyens */
     @media (max-width:920px){
       .caf-button.kra{
-        min-width:110px;
+        min-width:120px;
         height:42px;
-        padding:6px 12px;
+        padding:6px 14px;
         font-size:0.95rem;
       }
-      .kra-header{ column-gap:14px; }
-      .kra-header > .caf-button.kra{ margin-right:16px; }
+      .kra-header{ padding:10px 10px; gap:6px; }
     }
 
-    /* responsive mobile : encore moins d'écart */
     @media (max-width:420px){
       .caf-button.kra{
         min-width:96px;
@@ -157,8 +140,7 @@
         padding:6px 10px;
         font-size:0.88rem;
       }
-      .kra-header{ column-gap:10px; }
-      .kra-header > .caf-button.kra{ margin-right:10px; }
+      .kra-header{ padding:8px 8px; gap:6px; }
     }
 
     @keyframes glitch-crt {
@@ -389,7 +371,7 @@
   <div class="kra-outer">
     <div class="kra-container" id="kra-container">
       <div class="kra-header">
-        <!-- BOUTON CAF (même ligne que le titre, à gauche) -->
+        <!-- BOUTON CAF au-dessus du titre, centré -->
         <a
           class="caf-button glow kra"
           id="caf-btn-kra"
@@ -402,9 +384,6 @@
         </a>
 
         <div class="kra-title">KRA IMPORT'SS</div>
-
-        <!-- spacer pour équilibrer la grille et garder le titre centré -->
-        <div class="kra-spacer" aria-hidden="true"></div>
       </div>
 
       <!--
