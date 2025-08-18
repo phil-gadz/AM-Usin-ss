@@ -1,3 +1,0 @@
-[build]
-  command = "bash scripts/write-version.sh"
-  publish = "."   # ou "Site_Usinss_v4" si c'est ton publish dir réel
