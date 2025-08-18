@@ -636,50 +636,10 @@
     document.documentElement.style.overflowX = 'hidden';
     document.body.style.overflowX = 'hidden';
 
-    // --- affiche la date de la dernière build (version.json) dans #kra-last
-(function showBuildDate(){
-  const el = document.getElementById('kra-last');
-  if(!el) return;
-
-  async function updateFromVersion(){
-    try{
-      const res = await fetch('/version.json', {cache: 'no-store'});
-      if(!res.ok) throw new Error('no version.json');
-      const j = await res.json();
-      if(j && j.ts){
-        // format FR - date & heure locale
-        const d = new Date(j.ts);
-        // options : date courte + heure
-        const formatted = d.toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour:'2-digit', minute:'2-digit' });
-        el.textContent = `Dernière mise à jour: ${formatted}`;
-        return;
-      }
-    }catch(err){
-      // fallback : essayer le header Last-Modified d'index.html
-      try{
-        const head = await fetch('/index.html', {method:'HEAD', cache:'no-store'});
-        const lm = head.headers.get('last-modified');
-        if(lm){
-          const d = new Date(lm);
-          const formatted = d.toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour:'2-digit', minute:'2-digit' });
-          el.textContent = `Dernière mise à jour: ${formatted}`;
-          return;
-        }
-      }catch(_){}
-    }
-    // default
-    el.textContent = 'Dernière mise à jour: —';
-  }
-
-  // invoquer tout de suite et éventuellement rafraîchir (optionnel)
-  updateFromVersion();
-  // si tu veux que la date se mette à jour périodiquement (rarement utile) :
-  // setInterval(updateFromVersion, 60 * 60 * 1000); // toutes les heures
-})();
-
   </script>
 </body>
 </html>
+
 
 
 
