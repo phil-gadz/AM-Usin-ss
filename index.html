@@ -126,9 +126,6 @@
       text-align:center;
     }
 
-    /* small adjustment: make sure button visually sits just above title (not too far) */
-    .kra-header .caf-button.kra{ margin-bottom:0; }
-
     /* responsive : réduire la largeur et la hauteur sur écrans moyens */
     @media (max-width:920px){
       .caf-button.kra{
@@ -249,6 +246,15 @@
       border:none;
     }
 
+    /* layout for countdown + cta on right column */
+    .next-right {
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:8px;
+    }
+    #next-countdown { font-weight:700; font-size:.95rem; color:rgba(255,255,255,0.9); }
+
     /* ================= SEARCH ROW + SUGGESTIONS ================= */
     .search-wrap{ position:relative; width:100%; display:flex; justify-content:center; }
     .search-row{
@@ -285,6 +291,8 @@
       font-weight:800;
       cursor:pointer;
       box-shadow: 0 8px 20px rgba(90,90,120,0.08);
+      align-self:center;
+      margin-top:0;
     }
 
     .suggestions{
@@ -420,6 +428,7 @@
 
     .footer{ margin: 18px 0 40px; color: rgba(255,255,255,0.12); font-size:.85rem; text-align:center; }
 
+    /* ================= RESPONSIVE ADJUSTMENTS FOR MOBILE (countdown / Voir / Rechercher) ================= */
     @media (max-width:920px){
       .logo{ width:160px; }
       .title-row h2{ font-size:1.6rem; }
@@ -432,6 +441,45 @@
       .search-input{ width:65%; }
       .next-manip .title{ font-size:0.98rem; }
     }
+
+    @media (max-width:600px){
+      /* Stack the next-manip elements vertically, center countdown and button */
+      .next-manip{
+        flex-direction:column;
+        align-items:center;
+        text-align:center;
+        gap:10px;
+      }
+      .next-manip .left{
+        align-items:center;
+      }
+      .next-right{
+        width:100%;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+      }
+      .next-right .cta{
+        width:100%;
+        max-width:220px;
+      }
+      /* Make suggestions fit nicer */
+      .suggestions{ width:92%; left:4%; transform:none; top:calc(100% + 6px); }
+
+      /* Search row stacks, button centered with breathing room */
+      .search-row{
+        flex-direction:column;
+        gap:8px;
+        padding:8px 8px 0;
+      }
+      .search-input{ width:100%; max-width:680px; }
+      .search-btn{
+        width:160px;
+        align-self:center;
+        margin-top:6px;
+      }
+    }
+
     @media (max-width:420px){
       .week{ --cols:2; grid-template-columns: repeat(var(--cols), minmax(0,1fr)); }
       .logo{ max-width:60vw; }
@@ -439,65 +487,17 @@
       .search-input{ width:100%; min-width:0; }
       .search-row{ flex-direction:column; gap:8px; padding:8px 8px 0; }
       .suggestions{ width:94%; left:3%; transform:none; }
-      .next-manip{ flex-direction:column; align-items:flex-start; gap:6px; }
+      .next-manip{ padding:12px; gap:10px; }
+      .next-right .cta{ width:100%; max-width:260px; }
+      .next-right { align-items:center; }
+      .search-btn{ width:100%; max-width:360px; }
+      .kra-buttons{ gap:8px; }
     }
 
     /* freeze page while modal open: handled via JS (we set top and add class) */
     .modal-open{ position:fixed; left:0; right:0; overflow:hidden; }
   </style>
 </head>
-
-<script>
-/*
-  Auto-reload after deploy (léger)
-*/
-(function(){
-  const CHECK_URL = '/index.html';
-  const INTERVAL_MS = 1 * 1000;
-  let knownTag = null;
-  let knownLM = null;
-  let knownHash = null;
-  function simpleHash(s){
-    let h = 2166136261 >>> 0;
-    for(let i=0;i<s.length;i++){
-      h ^= s.charCodeAt(i);
-      h = Math.imul(h, 16777619) >>> 0;
-    }
-    return h.toString(36);
-  }
-  async function checkOnce(){
-    try{
-      let res = await fetch(CHECK_URL, { method: 'HEAD', cache: 'no-store' });
-      if(!res.ok){ res = await fetch(CHECK_URL, { method: 'GET', cache: 'no-store' }); }
-      const etag = res.headers.get('etag');
-      const lm = res.headers.get('last-modified');
-      if(etag){
-        if(knownTag && knownTag !== etag){ return reloadSafe(); }
-        knownTag = knownTag || etag; return;
-      }
-      if(lm){
-        if(knownLM && knownLM !== lm){ return reloadSafe(); }
-        knownLM = knownLM || lm; return;
-      }
-      if(res.bodyUsed === false){
-        const txt = await res.text();
-        const h = simpleHash(txt);
-        if(knownHash && knownHash !== h){ return reloadSafe(); }
-        knownHash = knownHash || h;
-      }
-    }catch(err){ }
-  }
-  function reloadSafe(){
-    const url = new URL(window.location.href);
-    url.searchParams.set('_r', Date.now());
-    window.location.replace(url.toString());
-  }
-  window.addEventListener('load', ()=>{
-    checkOnce();
-    setInterval(checkOnce, INTERVAL_MS);
-  });
-})();
-</script>
 
 <body>
   <canvas id="particles"></canvas>
@@ -553,8 +553,9 @@
           <div class="title" id="next-title">—</div>
           <div class="when" id="next-when">—</div>
         </div>
-        <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
-          <div id="next-countdown" style="font-weight:700; font-size:.95rem; color:rgba(255,255,255,0.9);">—</div>
+
+        <div class="next-right">
+          <div id="next-countdown">—</div>
           <button id="next-cta" class="cta" title="Voir la manipulation">Voir</button>
         </div>
       </div>
@@ -936,7 +937,7 @@
 
     /* ---------- SEARCH / SUGGESTIONS LOGIC ---------- */
 
-    // stopwords/déterminants à ignorer dans la recherche
+    // stopwords/déterminants à ignorer dans the search
     const STOPWORDS = new Set([
       'le','la','les','un','une','des','du','de',"d","l","au","aux","à","a","en",
       'ce','cette','ces','mon','ton','son','notre','votre','leur',
@@ -1164,35 +1165,27 @@
 
     // Get GMT offset minutes for Europe/Paris on a particular date (approx by checking noon that day)
     function parisOffsetMinutesForDate(year, monthIndex, day){
-      // monthIndex: 0-based
       const test = new Date(Date.UTC(year, monthIndex, day, 12, 0, 0));
-      // format with timeZoneName short like "GMT+2"
       const dtf = new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Paris', timeZoneName: 'short' });
       const parts = dtf.formatToParts(test);
       const tz = parts.find(p => p.type === 'timeZoneName')?.value || '';
-      // match GMT+2, GMT+01:00, etc.
       let signMatch = tz.match(/GMT([+-]\d{1,2})(?::?(\d{2}))?/);
       if(signMatch){
         const hh = parseInt(signMatch[1],10);
         const mm = signMatch[2] ? parseInt(signMatch[2],10) : 0;
         return hh * 60 + (hh >= 0 ? mm : -mm);
       }
-      // fallback: try to extract +2 or +1 in other formats
       let other = tz.match(/([+-]\d{1,2})/);
       if(other){
         return parseInt(other[1],10) * 60;
       }
-      return 60; // default CET offset 60 minutes (reasonable fallback)
+      return 60; // default CET
     }
 
     // Build UTC timestamp for a local Paris date/time (year, monthIndex, day, h, min)
     function utcMsFromParisLocal(year, monthIndex, day, hour, minute){
-      // get what the UTC ms would be for the Paris local datetime
-      // naive UTC ms for same Y-M-D H:M as if UTC:
       const naiveUtcMs = Date.UTC(year, monthIndex, day, hour, minute, 0, 0);
-      // find Paris offset (minutes east of UTC) for that date
-      const offsetMin = parisOffsetMinutesForDate(year, monthIndex, day); // e.g. +120 => 120
-      // localParis = UTC + offset => UTC = localParis - offset
+      const offsetMin = parisOffsetMinutesForDate(year, monthIndex, day);
       return naiveUtcMs - offsetMin * 60 * 1000;
     }
 
@@ -1254,14 +1247,11 @@
       const parts = dateKey.split('-');
       if(parts.length !== 3) return;
       const targetMonth = parseInt(parts[1], 10); // 1-based
-      // If current month differs, set and regenerate calendar first
       const currentShownMonth = parseInt(monthSelect.value,10);
       if(currentShownMonth !== targetMonth){
         monthSelect.value = String(targetMonth);
         generateCalendar(targetMonth, daysPerRow);
-        // re-run any active search silently to keep suggestions consistent
         onSearchTriggered(false);
-        // small timeout to ensure DOM painted before searching node
         setTimeout(()=> {
           const node = findDomEventNode(dateKey, evTitle);
           if(node) animateDayBoxForEvent(node);
@@ -1313,32 +1303,31 @@
     // update countdown every 1s, and full next event every 60s (or on changes)
     updateNextEventDisplay();
     setInterval(()=> {
-      // update countdown if cachedNext exists
       if(cachedNext && cachedNext.dt){
         const now = Date.now();
         const remaining = cachedNext.dt.getTime() - now;
-        // if event passed, recalc whole next list
         if(remaining <= 0){
           updateNextEventDisplay();
         } else {
           nextCountdownEl.textContent = fmtCountdown(remaining);
         }
       } else {
-        // ensure next event info is fresh occasionally
         updateNextEventDisplay();
       }
     }, 1000);
 
-    // re-evaluate next event when calendar regenerated (month/cols changed)
-    // month/cols change listeners already call updateNextEventDisplay where relevant
+    // Ensure when page loads on small screens the layout is correct
+    window.addEventListener('load', ()=> {
+      // Re-run search silently to re-evaluate suggestions if input present
+      onSearchTriggered(false);
+    });
 
-    /* ---------- small safety: expose some functions for console debugging (optional) ---------- */
+    // small debug helpers
     window.__dev = {
       buildDateFromEventInParis,
       getNextEvent,
       showEventAcrossMonths
     };
-
   </script>
 </body>
 </html>
