@@ -563,7 +563,7 @@
       <!--
         Pour modifier ce texte, édite directement index.html dans GitHub.
       -->
-      <div id="kra-msg">Alors ça marche</div>
+      <div id="kra-msg">Pas mal nan ?</div>
 
     </div>
 
@@ -935,7 +935,7 @@
     document.documentElement.style.overflowX = 'hidden';
     document.body.style.overflowX = 'hidden';
 
-    /* ---------- SEARCH / SUGGESTIONS LOGIC ---------- */
+    /* ---------- SEARCH / SUGGESTIONS LOGIC (across months now) ---------- */
 
     // stopwords/déterminants à ignorer dans the search
     const STOPWORDS = new Set([
@@ -965,14 +965,10 @@
       return tokens.filter(t => !STOPWORDS.has(t));
     }
 
-    function formatSuggestionLabel(dateKey, time, title){
-      const parts = (dateKey || '').split('-');
-      if(parts.length === 3){
-        const day = parts[2];
-        const monthName = monthSelect.options[monthSelect.selectedIndex].text; // current month name
-        return `${day} ${monthName} • ${time ? time + ' • ' : ''}${title}`;
-      }
-      return `${title} ${time ? '• ' + time : ''}`;
+    function formatSuggestionLabelFromDate(dateKey, ev){
+      const dt = buildDateFromEventInParis(dateKey, ev.time);
+      if(dt) return `${formatDateFriendlyParis(dt)} • ${ev.title}`;
+      return `${ev.title}`;
     }
 
     const suggestionsEl = document.getElementById('suggestions');
@@ -991,7 +987,7 @@
       if(animateTimeout){ clearTimeout(animateTimeout); animateTimeout = null; }
     }
 
-    function animateDayBoxForEvent(evEl){
+    function animateDayBoxForEventNode(evEl){
       if(!evEl) return;
       const dayEl = evEl.closest('.day');
       if(!dayEl) return;
@@ -1012,9 +1008,10 @@
 
     /**
      * onSearchTriggered(showAlertIfNone)
-     * - showAlertIfNone: when false, will not show an alert but will clear suggestions if no results.
-     * Behavior: searches current DOM events (i.e. current displayed month). If multiple matches -> show suggestions.
-     * If single match -> animate directly.
+     * - searches across all months in eventsData
+     * - if no match -> alert "Cette manip n'existe pas"
+     * - if single match -> automatically switch to that month and animate (no dropdown)
+     * - if multiple -> show suggestions dropdown (across months). Clicking an item switches month and animates.
      */
     function onSearchTriggered(showAlertIfNone = true){
       const raw = searchInputEl.value || '';
@@ -1030,52 +1027,51 @@
       if(searchTokens.length === 0){
         clearSuggestions();
         clearPreviousAnimation();
-        if(showAlertIfNone) alert("Cette manip n'existe pas ou n'est pas ce mois-ci");
+        if(showAlertIfNone) alert("Cette manip n'existe pas");
         return;
       }
 
-      // find matches among events in DOM (current month)
-      const eventEls = Array.from(document.querySelectorAll('.event'));
-      const matches = [];
-      for(const ev of eventEls){
-        const titleText = ev.getAttribute('data-event-title') || (ev.querySelector('.title') ? ev.querySelector('.title').innerText : '');
-        const normTitle = stripSsSuffixes(normalizeText(titleText));
-        const titleTokens = normTitle.split(/\s+/).filter(Boolean);
-        const matched = searchTokens.some(st => titleTokens.some(tt => tt === st));
-        if(matched){
-          matches.push(ev);
+      // find matches among eventsData (across months)
+      const matches = []; // {dateKey, ev}
+      for(const dateKey in eventsData){
+        const evs = eventsData[dateKey] || [];
+        for(const ev of evs){
+          if(!ev || !ev.title) continue;
+          const titleTokens = tokensFromString(ev.title);
+          const matched = searchTokens.some(st => titleTokens.some(tt => tt === st));
+          if(matched){
+            matches.push({ dateKey, ev });
+          }
         }
       }
 
       if(matches.length === 0){
         clearSuggestions();
         clearPreviousAnimation();
-        if(showAlertIfNone) alert("Cette manip n'existe pas ou n'est pas ce mois-ci");
+        if(showAlertIfNone) alert("Cette manip n'existe pas");
         return;
       }
 
       if(matches.length === 1){
         clearSuggestions();
-        animateDayBoxForEvent(matches[0]);
+        const m = matches[0];
+        showEventAcrossMonths(m.dateKey, m.ev.title);
         return;
       }
 
-      // multiple -> build suggestions dropdown for user to choose
+      // multiple -> build suggestions dropdown (for all months)
       suggestionsEl.innerHTML = '';
-      matches.forEach((ev, idx) => {
-        const dateKey = ev.getAttribute('data-event-date') || ev.closest('.day')?.getAttribute('data-date') || '';
-        const time = ev.getAttribute('data-event-time') || '';
-        const title = ev.getAttribute('data-event-title') || (ev.querySelector('.title') ? ev.querySelector('.title').innerText : '');
-        const label = formatSuggestionLabel(dateKey, time, title);
+      matches.forEach((m, idx) => {
         const item = document.createElement('div');
         item.className = 'item';
         item.setAttribute('role','option');
         item.setAttribute('data-match-index', idx);
-        item.innerText = label;
+        item.innerText = formatSuggestionLabelFromDate(m.dateKey, m.ev);
         item.addEventListener('click', (e) => {
-          animateDayBoxForEvent(ev);
+          // fill input with chosen title, switch and animate
+          searchInputEl.value = m.ev.title;
           clearSuggestions();
-          searchInputEl.value = title;
+          showEventAcrossMonths(m.dateKey, m.ev.title);
         });
         suggestionsEl.appendChild(item);
       });
@@ -1203,26 +1199,6 @@
       return new Date(utcMs);
     }
 
-    // find next event from now (based on Paris time) using eventsData; returns object {dateKey, evData, dateObj}
-    function getNextEvent(){
-      const nowUtcMs = Date.now();
-      const candidates = [];
-      for(const dateKey in eventsData){
-        const evs = eventsData[dateKey] || [];
-        evs.forEach(ev => {
-          if(!ev || !ev.title) return;
-          const dt = buildDateFromEventInParis(dateKey, ev.time);
-          if(!dt) return;
-          if(dt.getTime() >= nowUtcMs){
-            candidates.push({ dateKey, ev, dt });
-          }
-        });
-      }
-      if(candidates.length === 0) return null;
-      candidates.sort((a,b) => a.dt - b.dt);
-      return candidates[0];
-    }
-
     // format datetime friendly in Europe/Paris: "10 sept. 2025 • 20:00"
     function formatDateFriendlyParis(dt){
       if(!dt) return '—';
@@ -1251,14 +1227,16 @@
       if(currentShownMonth !== targetMonth){
         monthSelect.value = String(targetMonth);
         generateCalendar(targetMonth, daysPerRow);
+        // re-run the search silently (so suggestions & internal state match)
         onSearchTriggered(false);
+        // small timeout to allow DOM to populate
         setTimeout(()=> {
           const node = findDomEventNode(dateKey, evTitle);
-          if(node) animateDayBoxForEvent(node);
+          if(node) animateDayBoxForEventNode(node);
         }, 80);
       } else {
         const node = findDomEventNode(dateKey, evTitle);
-        if(node) animateDayBoxForEvent(node);
+        if(node) animateDayBoxForEventNode(node);
       }
     }
 
@@ -1277,6 +1255,25 @@
     }
 
     let cachedNext = null; // cached next event data to avoid recalculation each second
+    function getNextEvent(){
+      const nowUtcMs = Date.now();
+      const candidates = [];
+      for(const dateKey in eventsData){
+        const evs = eventsData[dateKey] || [];
+        evs.forEach(ev => {
+          if(!ev || !ev.title) return;
+          const dt = buildDateFromEventInParis(dateKey, ev.time);
+          if(!dt) return;
+          if(dt.getTime() >= nowUtcMs){
+            candidates.push({ dateKey, ev, dt });
+          }
+        });
+      }
+      if(candidates.length === 0) return null;
+      candidates.sort((a,b) => a.dt - b.dt);
+      return candidates[0];
+    }
+
     function updateNextEventDisplay(){
       const next = getNextEvent();
       cachedNext = next;
