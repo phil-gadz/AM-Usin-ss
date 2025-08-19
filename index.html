@@ -85,8 +85,8 @@
     /* variante pour la KRA header : moins haut, plus large (horizontal) */
     .caf-button.kra{
       height:46px;
-      min-width:150px;    /* plus large horizontalement */
-      padding:8px 20px;
+      min-width:140px;
+      padding:8px 18px;
       font-size:1rem;
       border-radius:12px;
       display:inline-flex;
@@ -106,6 +106,13 @@
       gap:8px; /* espace vertical entre bouton et titre */
     }
 
+    .kra-buttons{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:center;
+    }
+
     .kra-title{
       z-index:3;
       font-weight:900;
@@ -120,12 +127,12 @@
     }
 
     /* small adjustment: make sure button visually sits just above title (not too far) */
-    .kra-header .caf-button.kra{ margin-bottom:4px; }
+    .kra-header .caf-button.kra{ margin-bottom:0; }
 
     /* responsive : réduire la largeur et la hauteur sur écrans moyens */
     @media (max-width:920px){
       .caf-button.kra{
-        min-width:120px;
+        min-width:110px;
         height:42px;
         padding:6px 14px;
         font-size:0.95rem;
@@ -134,6 +141,7 @@
     }
 
     @media (max-width:420px){
+      .kra-buttons{ gap:8px; flex-wrap:wrap; }
       .caf-button.kra{
         min-width:96px;
         height:40px;
@@ -193,6 +201,121 @@
 
     #kra-msg{ min-height:56px; padding:12px; border-radius:10px; background:rgba(0,0,0,0.28); color:#fff; font-size:1rem; line-height:1.35; text-align:center; }
 
+    /* ================= PROCHAINE MANIP ================= */
+    .next-manip{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 14px;
+      border-radius:10px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border:1px solid rgba(255,255,255,0.04);
+      color:#fff;
+      min-height:56px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+    }
+    .next-manip .left{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .next-manip .label{
+      font-size:.78rem;
+      color:rgba(255,255,255,0.6);
+      text-transform:uppercase;
+      letter-spacing:0.6px;
+      font-weight:800;
+    }
+    .next-manip .title{
+      font-weight:900;
+      font-size:1.02rem;
+      color:#fff;
+    }
+    .next-manip .when{
+      font-size:.92rem;
+      color:rgba(255,255,255,0.85);
+    }
+    .next-manip .cta{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:8px 12px;
+      border-radius:10px;
+      background:linear-gradient(90deg,#ff4aad,#8e2be2);
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+      border:none;
+    }
+
+    /* ================= SEARCH ROW + SUGGESTIONS ================= */
+    .search-wrap{ position:relative; width:100%; display:flex; justify-content:center; }
+    .search-row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      padding:10px 6px 0;
+      z-index:3;
+      width:100%;
+      max-width:900px;
+      box-sizing:border-box;
+    }
+    .search-input{
+      min-width:220px;
+      max-width:640px;
+      width:60%;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.06);
+      background:rgba(0,0,0,0.35);
+      color:#fff;
+      font-size:1rem;
+      outline:none;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.6) inset;
+    }
+    .search-input::placeholder{ color:rgba(255,255,255,0.42); font-weight:500; }
+    .search-btn{
+      padding:10px 14px;
+      border-radius:10px;
+      border:none;
+      background:linear-gradient(180deg,#2b2b30,#161617);
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow: 0 8px 20px rgba(90,90,120,0.08);
+    }
+
+    .suggestions{
+      position:absolute;
+      top:100%;
+      left:50%;
+      transform:translateX(-50%);
+      margin-top:10px;
+      background:rgba(10,10,10,0.98);
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.06);
+      min-width:240px;
+      max-width:84%;
+      width:calc(60% + 120px);
+      z-index:40;
+      box-shadow:0 12px 30px rgba(0,0,0,0.6);
+      overflow:hidden;
+      max-height:320px;
+      overflow-y:auto;
+      display:none;
+    }
+    .suggestions.visible{ display:block; }
+    .suggestions .item{
+      padding:10px 12px;
+      font-weight:700;
+      cursor:pointer;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+    }
+    .suggestions .item:last-child{ border-bottom:none; }
+    .suggestions .item:hover{ background:rgba(255,255,255,0.03); }
+
     /* ================= CONTROLS + CALENDAR ================= */
     .controls{ width:100%; max-width:1400px; margin:12px auto 0; padding: 6px 12px 8px; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; gap:12px; }
 
@@ -242,6 +365,52 @@
     .event.green{ background: linear-gradient(135deg,#2bd07b 0%,#0fa55d 100%); color:#05220e; box-shadow:0 8px 28px rgba(20,160,90,0.18); }
     .event.text-black{ color:#000 !important; }
 
+    /* ================= SEARCH-ANIMATE (single cycle, like kra) */
+    .day.search-animate{
+      position:relative;
+      z-index:30;
+      border-radius:15px;
+      background-origin: padding-box, border-box;
+      background-clip: padding-box, border-box;
+      border:2px solid transparent;
+      overflow:visible;
+    }
+    .day.search-animate::after{
+      content:"";
+      position:absolute;
+      inset:-6px;
+      border-radius:calc(15px + 6px);
+      background: linear-gradient(90deg, var(--bg, #1b1b1f) 0%, var(--bg, #1b1b1f) 42%, #ff4aad 48%, #c86bff 50%, #8e2be2 52%, var(--bg, #1b1b1f) 58%, var(--bg, #1b1b1f) 100%);
+      background-size: 300% 100%;
+      z-index:-2;
+      pointer-events:none;
+      animation: search-border-slide 1600ms linear 0s 1 forwards;
+    }
+    .day.search-animate::before{
+      content:"";
+      position:absolute;
+      inset:-18px;
+      border-radius:calc(15px + 18px);
+      background: radial-gradient(50% 60% at 50% 45%, rgba(200,90,240,0.46) 0%, rgba(200,90,240,0.30) 18%, rgba(200,90,240,0.14) 36%, rgba(140,60,220,0.06) 56%, transparent 78%);
+      filter:blur(14px);
+      z-index:-3;
+      pointer-events:none;
+      transform-origin:center center;
+      animation: search-glow-breathe 1600ms cubic-bezier(.4,0,.2,1) 0s 1 forwards;
+      opacity:0.95;
+    }
+
+    @keyframes search-border-slide{
+      0%{ background-position:0% 50%; transform:scale(1); }
+      50%{ background-position:100% 50%; transform:scale(1.01); }
+      100%{ background-position:0% 50%; transform:scale(1); }
+    }
+    @keyframes search-glow-breathe{
+      0%{ transform:scale(1); filter:blur(8px); opacity:0.7; }
+      60%{ transform:scale(1.035); filter:blur(20px); opacity:0.95; }
+      100%{ transform:scale(1.05); filter:blur(26px); opacity:0.0; }
+    }
+
     /* zoom modal */
     .zoom-outer{ position:fixed; z-index:3000; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:auto; }
     .zoom-inner{ position:absolute; transform-origin:center center; transition: transform 380ms cubic-bezier(.22,.9,.32,1), left .42s, top .42s, width .42s, height .42s; will-change:transform; border-radius:14px; overflow:hidden; background:transparent; box-shadow:0 30px 80px rgba(0,0,0,0.6); }
@@ -260,11 +429,17 @@
       .week{ gap:10px; }
       .day{ min-height:120px; }
       .logo-container{ gap:8px; padding:22px 8px 16px; }
+      .search-input{ width:65%; }
+      .next-manip .title{ font-size:0.98rem; }
     }
     @media (max-width:420px){
       .week{ --cols:2; grid-template-columns: repeat(var(--cols), minmax(0,1fr)); }
       .logo{ max-width:60vw; }
       .select-wrap{ min-width:100px; }
+      .search-input{ width:100%; min-width:0; }
+      .search-row{ flex-direction:column; gap:8px; padding:8px 8px 0; }
+      .suggestions{ width:94%; left:3%; transform:none; }
+      .next-manip{ flex-direction:column; align-items:flex-start; gap:6px; }
     }
 
     /* freeze page while modal open: handled via JS (we set top and add class) */
@@ -274,20 +449,14 @@
 
 <script>
 /*
-  Auto-reload after deploy
-  - vérifie périodiquement l'ETag ou Last-Modified de la page racine (ou /manifest.json)
-  - si changement détecté -> reload.
-  - fallback : on récupère le HTML et on calcule un petit hash si le serveur ne renvoie pas d'headers.
+  Auto-reload after deploy (léger)
 */
-
 (function(){
-  const CHECK_URL = '/index.html'; // ou '/manifest.json' si tu préfères
-  const INTERVAL_MS = 1 * 1000;   // fréquence de vérif (15s). Augmente si tu veux moins de requêtes.
+  const CHECK_URL = '/index.html';
+  const INTERVAL_MS = 1 * 1000;
   let knownTag = null;
   let knownLM = null;
   let knownHash = null;
-
-  // simple hash pour fallback (pas crypto, juste pour détecter changement)
   function simpleHash(s){
     let h = 2166136261 >>> 0;
     for(let i=0;i<s.length;i++){
@@ -296,65 +465,34 @@
     }
     return h.toString(36);
   }
-
   async function checkOnce(){
     try{
-      // on essaie d'abord HEAD pour être light. Si HEAD renvoie pas les headers, on GET.
       let res = await fetch(CHECK_URL, { method: 'HEAD', cache: 'no-store' });
-      if(!res.ok){
-        // fallback GET
-        res = await fetch(CHECK_URL, { method: 'GET', cache: 'no-store' });
-      }
-
-      // headers à surveiller
+      if(!res.ok){ res = await fetch(CHECK_URL, { method: 'GET', cache: 'no-store' }); }
       const etag = res.headers.get('etag');
       const lm = res.headers.get('last-modified');
-
       if(etag){
-        if(knownTag && knownTag !== etag){
-          console.log('Auto-reload: ETag changed', knownTag, '→', etag);
-          return reloadSafe();
-        }
-        knownTag = knownTag || etag;
-        return;
+        if(knownTag && knownTag !== etag){ return reloadSafe(); }
+        knownTag = knownTag || etag; return;
       }
-
       if(lm){
-        if(knownLM && knownLM !== lm){
-          console.log('Auto-reload: Last-Modified changed', knownLM, '→', lm);
-          return reloadSafe();
-        }
-        knownLM = knownLM || lm;
-        return;
+        if(knownLM && knownLM !== lm){ return reloadSafe(); }
+        knownLM = knownLM || lm; return;
       }
-
-      // fallback : on lit le body et on compare hash
       if(res.bodyUsed === false){
         const txt = await res.text();
         const h = simpleHash(txt);
-        if(knownHash && knownHash !== h){
-          console.log('Auto-reload: body hash changed', knownHash, '→', h);
-          return reloadSafe();
-        }
+        if(knownHash && knownHash !== h){ return reloadSafe(); }
         knownHash = knownHash || h;
       }
-    }catch(err){
-      // silent fail (réseau, CDN momentané). On retente au prochain interval.
-      // console.warn('checkOnce error', err);
-    }
+    }catch(err){ }
   }
-
-  // reload sécurisé : bypass cache en ajoutant timestamp au href
   function reloadSafe(){
-    // if a modal / editing state exists, you could optionally prompt user
     const url = new URL(window.location.href);
     url.searchParams.set('_r', Date.now());
     window.location.replace(url.toString());
   }
-
-  // démarrer après chargement complet
   window.addEventListener('load', ()=>{
-    // run initial check to seed knownTag/LM/hash
     checkOnce();
     setInterval(checkOnce, INTERVAL_MS);
   });
@@ -371,28 +509,73 @@
   <div class="kra-outer">
     <div class="kra-container" id="kra-container">
       <div class="kra-header">
-        <!-- BOUTON CAF au-dessus du titre, centré -->
-        <a
-          class="caf-button glow kra"
-          id="caf-btn-kra"
-          href="https://drive.google.com/drive/folders/10BKkNHleIhqUGhCABqkPIw9dKcZGQ9vv?usp=drive_link"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Ouvrir le dossier CAF sur Google Drive"
-        >
-          <span class="label">CAF</span>
-        </a>
+        <!-- three buttons: HYMNES - CAF - CHANTS (symétriques) -->
+        <div class="kra-buttons" role="toolbar" aria-label="Liens rapides">
+          <a
+            class="caf-button glow kra"
+            id="hymnes-btn"
+            href="https://drive.google.com/drive/folders/1wqX_V6nXPmzf8B4sqDyX04H81YtQn5wn?usp=drive_link"
+            target="_blank" rel="noopener noreferrer"
+            aria-label="Ouvrir le dossier HYMNES"
+          >
+            <span class="label">HYMNES</span>
+          </a>
+
+          <a
+            class="caf-button glow kra"
+            id="caf-btn-kra"
+            href="https://drive.google.com/drive/folders/10BKkNHleIhqUGhCABqkPIw9dKcZGQ9vv?usp=drive_link"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Ouvrir le dossier CAF sur Google Drive"
+          >
+            <span class="label">CAF</span>
+          </a>
+
+          <a
+            class="caf-button glow kra"
+            id="chants-btn"
+            href="https://drive.google.com/drive/folders/1MyyjtflzVBngREnS5WHq1667aiZbi0Av?usp=drive_link"
+            target="_blank" rel="noopener noreferrer"
+            aria-label="Ouvrir le dossier CHANTS"
+          >
+            <span class="label">CHANTS</span>
+          </a>
+        </div>
 
         <div class="kra-title">KRA IMPORT'SS</div>
       </div>
 
+      <!-- PROCHAINE MANIP : placé entre le titre KRA et la zone éditable -->
+      <div id="next-manip" class="next-manip" aria-live="polite" role="region">
+        <div class="left">
+          <div class="label">Prochaine manip</div>
+          <div class="title" id="next-title">—</div>
+          <div class="when" id="next-when">—</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+          <div id="next-countdown" style="font-weight:700; font-size:.95rem; color:rgba(255,255,255,0.9);">—</div>
+          <button id="next-cta" class="cta" title="Voir la manipulation">Voir</button>
+        </div>
+      </div>
+
       <!--
         Pour modifier ce texte, édite directement index.html dans GitHub.
-        (L'édition via UI a été supprimée volontairement.)
       -->
       <div id="kra-msg">Alors ça marche</div>
 
     </div>
+
+    <!-- SEARCH WRAP: juste en dessous de la case KRA IMPORT'SS -->
+    <div class="search-wrap" aria-label="Recherche des manipulations">
+      <div class="search-row" role="search">
+        <input id="search-input" class="search-input" type="search" placeholder="Rechercher une manip" aria-label="Rechercher une manipulation">
+        <button id="search-btn" class="search-btn caf-button" style="padding:10px 12px; height:44px; border-radius:10px;">Rechercher</button>
+      </div>
+
+      <div id="suggestions" class="suggestions" role="listbox" aria-label="Résultats de la recherche"></div>
+    </div>
+
   </div>
 
   <!-- CONTROLS : title + compact responsive controls -->
@@ -491,7 +674,7 @@
     initParticles();
     drawParticles();
 
-    /* ---------- CALENDAR & DATA (unchanged) ---------- */
+    /* ---------- CALENDAR & DATA ---------- */
     const days = ["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"];
     const monthSelect = document.getElementById('month-select');
     const colsSelect = document.getElementById('cols-select');
@@ -528,7 +711,7 @@
       "2025-09-28":[{time:"Aprem",title:"Chop'ss",color:"red"}],
       "2025-09-29":[{time:"20:00",title:"Manip AMJE",color:"blue"}],
       "2025-09-30":[{time:"",title:"UAI",color:"yellow",textBlack:true}],
-      /* --- OCTOBRE / NOVEMBRE --- (les mêmes données que précédemment) */
+      /* --- OCTOBRE / NOVEMBRE --- */
       "2025-10-01":[{time:"20:00",title:"Hypo-bucque 2",color:"blue"}],
       "2025-10-02":[{time:"06:00",title:"Hypo-moütardes",color:"blue"},{time:"20:00",title:"Bordel'ss/Siber'ss/Knack",color:"blue"}],
       "2025-10-03":[{time:"20:00",title:"Nuit des justiciers",color:"blue"}],
@@ -583,6 +766,8 @@
       "2025-11-30":[]
     };
 
+    function pad(n){ return String(n).padStart(2,'0'); }
+
     function generateCalendar(month, cols){
       calendarContainer.innerHTML = '';
       monthTitle.textContent = `${monthSelect.options[monthSelect.selectedIndex].text} ${currentYear}`;
@@ -602,7 +787,7 @@
           if(d){
             const weekday = new Date(currentYear, month-1, d).getDay();
             const dayName = days[(weekday + 6) % 7];
-            header.textContent = `${dayName} ${String(d).padStart(2,'0')}`;
+            header.textContent = `${dayName} ${pad(d)}`;
           } else { header.textContent = ''; header.style.visibility = 'hidden'; }
           weekDiv.appendChild(header);
         }
@@ -611,7 +796,8 @@
           const dayBox = document.createElement('div'); dayBox.className = 'day'; dayBox.setAttribute('onclick','zoom(this)');
           const d = rowDayNumbers[i];
           if(d && d>0){
-            const dateKey = `${currentYear}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            const dateKey = `${currentYear}-${pad(month)}-${pad(d)}`;
+            dayBox.setAttribute('data-date', dateKey);
             const events = eventsData[dateKey];
             if(events && events.length){
               events.forEach(evData=>{
@@ -620,6 +806,10 @@
                 const colorClass = evData.color ? evData.color : 'blue';
                 ev.classList.add(colorClass);
                 if(evData.textBlack) ev.classList.add('text-black');
+                // store metadata for mapping
+                ev.setAttribute('data-event-title', evData.title);
+                ev.setAttribute('data-event-date', dateKey);
+                ev.setAttribute('data-event-time', evData.time || '');
                 const timeDiv = document.createElement('div'); timeDiv.className = 'time'; timeDiv.innerText = evData.time ? evData.time : '';
                 const titleDiv = document.createElement('div'); titleDiv.className = 'title'; titleDiv.innerText = evData.title;
                 ev.appendChild(timeDiv); ev.appendChild(titleDiv);
@@ -634,8 +824,8 @@
       }
     }
 
-    monthSelect.addEventListener('change', ()=> generateCalendar(parseInt(monthSelect.value,10), daysPerRow));
-    colsSelect.addEventListener('change', ()=> { const v = parseInt(colsSelect.value,10); if(!isNaN(v) && v>=3 && v<=7){ daysPerRow = v; generateCalendar(parseInt(monthSelect.value,10), daysPerRow); }});    generateCalendar(parseInt(monthSelect.value,10), daysPerRow);
+    // initial render
+    generateCalendar(parseInt(monthSelect.value,10), daysPerRow);
 
     /* ---------- ZOOM modal (freeze page scroll while open) ---------- */
     const overlay = document.getElementById('overlay');
@@ -744,8 +934,411 @@
     document.documentElement.style.overflowX = 'hidden';
     document.body.style.overflowX = 'hidden';
 
+    /* ---------- SEARCH / SUGGESTIONS LOGIC ---------- */
+
+    // stopwords/déterminants à ignorer dans la recherche
+    const STOPWORDS = new Set([
+      'le','la','les','un','une','des','du','de',"d","l","au","aux","à","a","en",
+      'ce','cette','ces','mon','ton','son','notre','votre','leur',
+      'et','ou','qui','que','quoi','dans','sur','par','pour','avec','sans','sous','entre','chez','vers',
+      'du','de','des'
+    ]);
+
+    function normalizeText(s){
+      if(!s) return '';
+      return s.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/[^a-z0-9\'\s]+/g,' ') // keep apostrophes for next step
+        .trim();
+    }
+
+    function stripSsSuffixes(s){
+      return s.replace(/\'?ss\b/g, '').replace(/\bss\b/g,'');
+    }
+
+    function tokensFromString(s){
+      const norm = normalizeText(s);
+      if(!norm) return [];
+      const stripped = stripSsSuffixes(norm);
+      const tokens = stripped.split(/\s+/).filter(Boolean);
+      return tokens.filter(t => !STOPWORDS.has(t));
+    }
+
+    function formatSuggestionLabel(dateKey, time, title){
+      const parts = (dateKey || '').split('-');
+      if(parts.length === 3){
+        const day = parts[2];
+        const monthName = monthSelect.options[monthSelect.selectedIndex].text; // current month name
+        return `${day} ${monthName} • ${time ? time + ' • ' : ''}${title}`;
+      }
+      return `${title} ${time ? '• ' + time : ''}`;
+    }
+
+    const suggestionsEl = document.getElementById('suggestions');
+    const searchInputEl = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+    let animateTimeout = null;
+
+    function clearSuggestions(){
+      suggestionsEl.innerHTML = '';
+      suggestionsEl.classList.remove('visible');
+    }
+
+    function clearPreviousAnimation(){
+      const prev = document.querySelector('.day.search-animate');
+      if(prev) prev.classList.remove('search-animate');
+      if(animateTimeout){ clearTimeout(animateTimeout); animateTimeout = null; }
+    }
+
+    function animateDayBoxForEvent(evEl){
+      if(!evEl) return;
+      const dayEl = evEl.closest('.day');
+      if(!dayEl) return;
+      const weekRow = dayEl.closest('.week');
+      if(weekRow){
+        weekRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        dayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      clearPreviousAnimation();
+      void dayEl.offsetWidth; // reflow to reset animation
+      dayEl.classList.add('search-animate');
+      animateTimeout = setTimeout(()=> {
+        dayEl.classList.remove('search-animate');
+        animateTimeout = null;
+      }, 1850);
+    }
+
+    /**
+     * onSearchTriggered(showAlertIfNone)
+     * - showAlertIfNone: when false, will not show an alert but will clear suggestions if no results.
+     * Behavior: searches current DOM events (i.e. current displayed month). If multiple matches -> show suggestions.
+     * If single match -> animate directly.
+     */
+    function onSearchTriggered(showAlertIfNone = true){
+      const raw = searchInputEl.value || '';
+      const q = raw.trim();
+      if(q.length === 0){
+        clearSuggestions();
+        clearPreviousAnimation();
+        return;
+      }
+      const searchTokens = tokensFromString(q);
+
+      // if only stopwords -> no results
+      if(searchTokens.length === 0){
+        clearSuggestions();
+        clearPreviousAnimation();
+        if(showAlertIfNone) alert("Cette manip n'existe pas ou n'est pas ce mois-ci");
+        return;
+      }
+
+      // find matches among events in DOM (current month)
+      const eventEls = Array.from(document.querySelectorAll('.event'));
+      const matches = [];
+      for(const ev of eventEls){
+        const titleText = ev.getAttribute('data-event-title') || (ev.querySelector('.title') ? ev.querySelector('.title').innerText : '');
+        const normTitle = stripSsSuffixes(normalizeText(titleText));
+        const titleTokens = normTitle.split(/\s+/).filter(Boolean);
+        const matched = searchTokens.some(st => titleTokens.some(tt => tt === st));
+        if(matched){
+          matches.push(ev);
+        }
+      }
+
+      if(matches.length === 0){
+        clearSuggestions();
+        clearPreviousAnimation();
+        if(showAlertIfNone) alert("Cette manip n'existe pas ou n'est pas ce mois-ci");
+        return;
+      }
+
+      if(matches.length === 1){
+        clearSuggestions();
+        animateDayBoxForEvent(matches[0]);
+        return;
+      }
+
+      // multiple -> build suggestions dropdown for user to choose
+      suggestionsEl.innerHTML = '';
+      matches.forEach((ev, idx) => {
+        const dateKey = ev.getAttribute('data-event-date') || ev.closest('.day')?.getAttribute('data-date') || '';
+        const time = ev.getAttribute('data-event-time') || '';
+        const title = ev.getAttribute('data-event-title') || (ev.querySelector('.title') ? ev.querySelector('.title').innerText : '');
+        const label = formatSuggestionLabel(dateKey, time, title);
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.setAttribute('role','option');
+        item.setAttribute('data-match-index', idx);
+        item.innerText = label;
+        item.addEventListener('click', (e) => {
+          animateDayBoxForEvent(ev);
+          clearSuggestions();
+          searchInputEl.value = title;
+        });
+        suggestionsEl.appendChild(item);
+      });
+      suggestionsEl.classList.add('visible');
+    }
+
+    // wire button + Enter key (no live search)
+    searchBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      onSearchTriggered(true);
+    });
+    searchInputEl.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        onSearchTriggered(true);
+      }
+      if(e.key === 'Escape'){
+        searchInputEl.value = '';
+        clearSuggestions();
+        clearPreviousAnimation();
+      }
+    });
+
+    // clicking outside suggestions hides them
+    document.addEventListener('click', (e) => {
+      const withinSearch = e.composedPath().some(el => el === suggestionsEl || el === searchInputEl || el === searchBtn || (el && el.classList && el.classList.contains && el.classList.contains('search-row')));
+      if(!withinSearch){
+        clearSuggestions();
+      }
+    });
+
+    // when month changes, keep search input and re-run search silently
+    monthSelect.addEventListener('change', () => {
+      generateCalendar(parseInt(monthSelect.value,10), daysPerRow);
+      clearPreviousAnimation();
+      onSearchTriggered(false);
+      updateNextEventDisplay();
+    });
+
+    // when cols (layout) change, regenerate and re-run search so suggestions stay relevant
+    colsSelect.addEventListener('change', ()=> {
+      const v = parseInt(colsSelect.value,10);
+      if(!isNaN(v) && v>=3 && v<=7){
+        daysPerRow = v;
+        generateCalendar(parseInt(monthSelect.value,10), daysPerRow);
+        clearPreviousAnimation();
+        onSearchTriggered(false);
+        updateNextEventDisplay();
+      }
+    });
+
+    // defensive hide on resize
+    window.addEventListener('resize', () => {
+      clearSuggestions();
+    });
+
+    /* ---------- NEXT EVENT (Prochaine manip) with Europe/Paris timezone & countdown ---------- */
+
+    const nextTitleEl = document.getElementById('next-title');
+    const nextWhenEl = document.getElementById('next-when');
+    const nextCta = document.getElementById('next-cta');
+    const nextCountdownEl = document.getElementById('next-countdown');
+
+    // Interpret common human times used in dataset
+    function interpretTimeStringAsHM(timeStr){
+      if(!timeStr || timeStr.trim().length === 0) return null;
+      const s = timeStr.toLowerCase().trim();
+      // exact hh:mm or hhhmm
+      const m = s.match(/(\d{1,2})\s*[:h]\s*(\d{2})/);
+      if(m){
+        let h = parseInt(m[1],10);
+        let min = parseInt(m[2],10);
+        if(h >= 0 && h < 24 && min >=0 && min < 60) return {h, min};
+      }
+      if(s.includes('aprem') || s.includes('après') || s.includes('apres')) return {h:15, min:0};
+      if(s.includes('soir')) return {h:20, min:0};
+      if(s.includes('jusqu')) return {h:18, min:0};
+      if(s.includes('matin')) return {h:9, min:0};
+      // some entries like "06:00" handled above; fallback numeric hour
+      const mm = s.match(/^\d{1,2}$/);
+      if(mm){
+        let h = parseInt(mm[0],10);
+        if(h >= 0 && h < 24) return {h, min:0};
+      }
+      return null;
+    }
+
+    // Get GMT offset minutes for Europe/Paris on a particular date (approx by checking noon that day)
+    function parisOffsetMinutesForDate(year, monthIndex, day){
+      // monthIndex: 0-based
+      const test = new Date(Date.UTC(year, monthIndex, day, 12, 0, 0));
+      // format with timeZoneName short like "GMT+2"
+      const dtf = new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Paris', timeZoneName: 'short' });
+      const parts = dtf.formatToParts(test);
+      const tz = parts.find(p => p.type === 'timeZoneName')?.value || '';
+      // match GMT+2, GMT+01:00, etc.
+      let signMatch = tz.match(/GMT([+-]\d{1,2})(?::?(\d{2}))?/);
+      if(signMatch){
+        const hh = parseInt(signMatch[1],10);
+        const mm = signMatch[2] ? parseInt(signMatch[2],10) : 0;
+        return hh * 60 + (hh >= 0 ? mm : -mm);
+      }
+      // fallback: try to extract +2 or +1 in other formats
+      let other = tz.match(/([+-]\d{1,2})/);
+      if(other){
+        return parseInt(other[1],10) * 60;
+      }
+      return 60; // default CET offset 60 minutes (reasonable fallback)
+    }
+
+    // Build UTC timestamp for a local Paris date/time (year, monthIndex, day, h, min)
+    function utcMsFromParisLocal(year, monthIndex, day, hour, minute){
+      // get what the UTC ms would be for the Paris local datetime
+      // naive UTC ms for same Y-M-D H:M as if UTC:
+      const naiveUtcMs = Date.UTC(year, monthIndex, day, hour, minute, 0, 0);
+      // find Paris offset (minutes east of UTC) for that date
+      const offsetMin = parisOffsetMinutesForDate(year, monthIndex, day); // e.g. +120 => 120
+      // localParis = UTC + offset => UTC = localParis - offset
+      return naiveUtcMs - offsetMin * 60 * 1000;
+    }
+
+    // create Date from dateKey (YYYY-MM-DD) and evTime (string). If evTime cannot be interpreted, use fallback (12:00)
+    function buildDateFromEventInParis(dateKey, evTime){
+      const parts = (dateKey || '').split('-');
+      if(parts.length !== 3) return null;
+      const y = parseInt(parts[0],10);
+      const m = parseInt(parts[1],10) - 1;
+      const d = parseInt(parts[2],10);
+      const hm = interpretTimeStringAsHM(evTime);
+      const h = hm ? hm.h : 12;
+      const min = hm ? hm.min : 0;
+      const utcMs = utcMsFromParisLocal(y, m, d, h, min);
+      return new Date(utcMs);
+    }
+
+    // find next event from now (based on Paris time) using eventsData; returns object {dateKey, evData, dateObj}
+    function getNextEvent(){
+      const nowUtcMs = Date.now();
+      const candidates = [];
+      for(const dateKey in eventsData){
+        const evs = eventsData[dateKey] || [];
+        evs.forEach(ev => {
+          if(!ev || !ev.title) return;
+          const dt = buildDateFromEventInParis(dateKey, ev.time);
+          if(!dt) return;
+          if(dt.getTime() >= nowUtcMs){
+            candidates.push({ dateKey, ev, dt });
+          }
+        });
+      }
+      if(candidates.length === 0) return null;
+      candidates.sort((a,b) => a.dt - b.dt);
+      return candidates[0];
+    }
+
+    // format datetime friendly in Europe/Paris: "10 sept. 2025 • 20:00"
+    function formatDateFriendlyParis(dt){
+      if(!dt) return '—';
+      const datePart = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', day: '2-digit', month:'short', year:'numeric' }).format(dt);
+      const timePart = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', hour:'2-digit', minute:'2-digit', hour12:false }).format(dt);
+      return `${datePart} • ${timePart}`;
+    }
+
+    // find the DOM .event node corresponding to the event object (to "Voir" it)
+    function findDomEventNode(dateKey, evTitle){
+      const nodes = Array.from(document.querySelectorAll('.event'));
+      for(const n of nodes){
+        const nk = n.getAttribute('data-event-date') || '';
+        const nt = n.getAttribute('data-event-title') || (n.querySelector('.title') ? n.querySelector('.title').innerText : '');
+        if(nk === dateKey && nt === evTitle) return n;
+      }
+      return null;
+    }
+
+    // Scroll / animate to event; if month not displayed, switch month (works across months)
+    function showEventAcrossMonths(dateKey, evTitle){
+      const parts = dateKey.split('-');
+      if(parts.length !== 3) return;
+      const targetMonth = parseInt(parts[1], 10); // 1-based
+      // If current month differs, set and regenerate calendar first
+      const currentShownMonth = parseInt(monthSelect.value,10);
+      if(currentShownMonth !== targetMonth){
+        monthSelect.value = String(targetMonth);
+        generateCalendar(targetMonth, daysPerRow);
+        // re-run any active search silently to keep suggestions consistent
+        onSearchTriggered(false);
+        // small timeout to ensure DOM painted before searching node
+        setTimeout(()=> {
+          const node = findDomEventNode(dateKey, evTitle);
+          if(node) animateDayBoxForEvent(node);
+        }, 80);
+      } else {
+        const node = findDomEventNode(dateKey, evTitle);
+        if(node) animateDayBoxForEvent(node);
+      }
+    }
+
+    // countdown formatting
+    function fmtCountdown(ms){
+      if(ms <= 0) return 'à l’instant';
+      const totalSec = Math.floor(ms / 1000);
+      const days = Math.floor(totalSec / 86400);
+      const hours = Math.floor((totalSec % 86400) / 3600);
+      const mins = Math.floor((totalSec % 3600) / 60);
+      const secs = totalSec % 60;
+      if(days > 0) return `dans ${days}j ${hours}h ${mins}m`;
+      if(hours > 0) return `dans ${hours}h ${mins}m`;
+      if(mins > 0) return `dans ${mins}m ${secs}s`;
+      return `dans ${secs}s`;
+    }
+
+    let cachedNext = null; // cached next event data to avoid recalculation each second
+    function updateNextEventDisplay(){
+      const next = getNextEvent();
+      cachedNext = next;
+      if(!next){
+        nextTitleEl.textContent = "Aucune manipulation à venir";
+        nextWhenEl.textContent = "";
+        nextCountdownEl.textContent = "";
+        nextCta.style.display = 'none';
+        return;
+      }
+      nextTitleEl.textContent = next.ev.title;
+      nextWhenEl.textContent = formatDateFriendlyParis(next.dt);
+      nextCta.style.display = 'inline-flex';
+
+      // wire CTA to show across months
+      nextCta.onclick = () => {
+        showEventAcrossMonths(next.dateKey, next.ev.title);
+      };
+      // immediate countdown update
+      const now = Date.now();
+      nextCountdownEl.textContent = fmtCountdown(next.dt.getTime() - now);
+    }
+
+    // update countdown every 1s, and full next event every 60s (or on changes)
+    updateNextEventDisplay();
+    setInterval(()=> {
+      // update countdown if cachedNext exists
+      if(cachedNext && cachedNext.dt){
+        const now = Date.now();
+        const remaining = cachedNext.dt.getTime() - now;
+        // if event passed, recalc whole next list
+        if(remaining <= 0){
+          updateNextEventDisplay();
+        } else {
+          nextCountdownEl.textContent = fmtCountdown(remaining);
+        }
+      } else {
+        // ensure next event info is fresh occasionally
+        updateNextEventDisplay();
+      }
+    }, 1000);
+
+    // re-evaluate next event when calendar regenerated (month/cols changed)
+    // month/cols change listeners already call updateNextEventDisplay where relevant
+
+    /* ---------- small safety: expose some functions for console debugging (optional) ---------- */
+    window.__dev = {
+      buildDateFromEventInParis,
+      getNextEvent,
+      showEventAcrossMonths
+    };
+
   </script>
 </body>
 </html>
-
-
