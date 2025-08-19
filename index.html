@@ -497,6 +497,85 @@
     /* freeze page while modal open: handled via JS (we set top and add class) */
     .modal-open{ position:fixed; left:0; right:0; overflow:hidden; }
   </style>
+
+  <!-- ================= AUTO-RELOAD (polling) =================
+       Garde ça : c'est le fallback qui check /manifest.json toutes les X ms
+       pour détecter un déploiement et appeler reloadSafe().
+  -->
+  <script>
+    (function(){
+      const CHECK_URL = '/manifest.json'; // manifest est plus léger et fréquemment mis à jour
+      const INTERVAL_MS = 1 * 1000;   // 1s comme tu voulais
+      let knownTag = null;
+      let knownLM = null;
+      let knownHash = null;
+
+      function simpleHash(s){
+        let h = 2166136261 >>> 0;
+        for(let i=0;i<s.length;i++){
+          h ^= s.charCodeAt(i);
+          h = Math.imul(h, 16777619) >>> 0;
+        }
+        return h.toString(36);
+      }
+
+      async function checkOnce(){
+        try{
+          let res = await fetch(CHECK_URL, { method: 'HEAD', cache: 'no-store' });
+          if(!res.ok){
+            res = await fetch(CHECK_URL, { method: 'GET', cache: 'no-store' });
+          }
+          const etag = res.headers.get('etag');
+          const lm = res.headers.get('last-modified');
+
+          if(etag){
+            if(knownTag && knownTag !== etag){
+              console.log('Auto-reload: ETag changed', knownTag, '→', etag);
+              return reloadSafe();
+            }
+            knownTag = knownTag || etag;
+            return;
+          }
+          if(lm){
+            if(knownLM && knownLM !== lm){
+              console.log('Auto-reload: Last-Modified changed', knownLM, '→', lm);
+              return reloadSafe();
+            }
+            knownLM = knownLM || lm;
+            return;
+          }
+
+          if(res.bodyUsed === false){
+            const txt = await res.text();
+            const h = simpleHash(txt);
+            if(knownHash && knownHash !== h){
+              console.log('Auto-reload: body hash changed', knownHash, '→', h);
+              return reloadSafe();
+            }
+            knownHash = knownHash || h;
+          }
+        }catch(err){
+          // silent fail
+        }
+      }
+
+      // reload sécurisé : bypass cache
+      function reloadSafe(){
+        const url = new URL(window.location.href);
+        url.searchParams.set('_r', Date.now());
+        window.location.replace(url.toString());
+      }
+
+      // expose reloadSafe so SW message handler can call it
+      window.reloadSafe = reloadSafe;
+
+      window.addEventListener('load', ()=>{
+        checkOnce();
+        setInterval(checkOnce, INTERVAL_MS);
+      });
+    })();
+  </script>
+
 </head>
 
 <body>
@@ -560,16 +639,12 @@
         </div>
       </div>
 
-      <!--
-        Pour modifier ce texte, édite directement index.html dans GitHub.
-      -->
-      <div id="kra-msg">On en pense quoi la team ?</div>
+      <div id="kra-msg">Et là c'est pas mal nan ?</div>
 
     </div>
 
     <!-- SEARCH WRAP: juste en dessous de la case KRA IMPORT'SS -->
     <div class="search-wrap" aria-label="Recherche des manipulations">
-      <!-- Use a form so mobile keyboard "search" / Enter triggers same behaviour -->
       <form id="search-form" class="search-row" role="search" autocomplete="off" onsubmit="return false;">
         <input
           id="search-input"
@@ -1090,7 +1165,7 @@
       suggestionsEl.classList.add('visible');
     }
 
-    // Make the form submission handle search — this ensures mobile keyboard "Search" / Enter triggers the same action.
+    // Make the form submission handle search — this ensures mobile keyboard "search" / Enter triggers the same action.
     searchForm.addEventListener('submit', (e) => {
       e.preventDefault();
       onSearchTriggered(true);
@@ -1098,7 +1173,6 @@
 
     // Also keep explicit click handler for the visible button (redundant but safe)
     searchBtn.addEventListener('click', (e) => {
-      // If button is type=submit, form submit handler will already run; prevent double-calls by preventing default here and calling direct.
       e.preventDefault();
       onSearchTriggered(true);
     });
@@ -1244,9 +1318,7 @@
       if(currentShownMonth !== targetMonth){
         monthSelect.value = String(targetMonth);
         generateCalendar(targetMonth, daysPerRow);
-        // re-run the search silently (so suggestions & internal state match)
         onSearchTriggered(false);
-        // small timeout to allow DOM to populate
         setTimeout(()=> {
           const node = findDomEventNode(dateKey, evTitle);
           if(node) animateDayBoxForEventNode(node);
@@ -1332,7 +1404,6 @@
 
     // Ensure when page loads on small screens the layout is correct
     window.addEventListener('load', ()=> {
-      // Re-run search silently to re-evaluate suggestions if input present
       onSearchTriggered(false);
     });
 
@@ -1343,7 +1414,57 @@
       showEventAcrossMonths
     };
   </script>
+
+  <!-- ================= SERVICE WORKER REGISTRATION & HANDLERS ================= -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        console.log('ServiceWorker registered:', reg);
+
+        // detect updatefound on the registration (new SW installing)
+        reg.addEventListener('updatefound', () => {
+          const newSW = reg.installing;
+          console.log('SW updatefound', newSW);
+          if (newSW) {
+            newSW.addEventListener('statechange', () => {
+              console.log('newSW state:', newSW.state);
+              // if it becomes 'activated' there will be controllerchange — we also listen for messages below
+            });
+          }
+        });
+      }).catch(err => {
+        console.warn('SW registration failed:', err);
+      });
+
+      // listen to messages from SW
+      navigator.serviceWorker.addEventListener('message', (ev) => {
+        if (!ev || !ev.data) return;
+        const d = ev.data;
+        if (d.type === 'SW_UPDATED') {
+          // Only trigger reload if this page was controlled previously (avoid reload on first install)
+          if (navigator.serviceWorker.controller) {
+            console.log('SW_UPDATED received, reloading via reloadSafe()');
+            if (window.reloadSafe) window.reloadSafe();
+            else window.location.reload();
+          } else {
+            // not controlled yet (first install) → ignore
+            console.log('SW_UPDATED received but no controller — ignoring (first install).');
+          }
+        }
+      });
+
+      // also listen for controllerchange as a fallback (will fire when new SW takes control)
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        console.log('controllerchange detected — reloading');
+        setTimeout(() => {
+          if (window.reloadSafe) window.reloadSafe();
+          else window.location.reload();
+        }, 80);
+      });
+    }
+  </script>
 </body>
 </html>
-
-
