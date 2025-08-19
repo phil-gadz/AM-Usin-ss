@@ -563,16 +563,27 @@
       <!--
         Pour modifier ce texte, édite directement index.html dans GitHub.
       -->
-      <div id="kra-msg">Pas mal nan ?</div>
+      <div id="kra-msg">Alors ça marche</div>
 
     </div>
 
     <!-- SEARCH WRAP: juste en dessous de la case KRA IMPORT'SS -->
     <div class="search-wrap" aria-label="Recherche des manipulations">
-      <div class="search-row" role="search">
-        <input id="search-input" class="search-input" type="search" placeholder="Rechercher une manip" aria-label="Rechercher une manipulation">
-        <button id="search-btn" class="search-btn caf-button" style="padding:10px 12px; height:44px; border-radius:10px;">Rechercher</button>
-      </div>
+      <!-- Use a form so mobile keyboard "search" / Enter triggers same behaviour -->
+      <form id="search-form" class="search-row" role="search" autocomplete="off" onsubmit="return false;">
+        <input
+          id="search-input"
+          class="search-input"
+          type="search"
+          placeholder="Rechercher une manip"
+          aria-label="Rechercher une manipulation"
+          enterkeyhint="search"
+          inputmode="search"
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <button id="search-btn" type="submit" class="search-btn caf-button" style="padding:10px 12px; height:44px; border-radius:10px;">Rechercher</button>
+      </form>
 
       <div id="suggestions" class="suggestions" role="listbox" aria-label="Résultats de la recherche"></div>
     </div>
@@ -935,9 +946,9 @@
     document.documentElement.style.overflowX = 'hidden';
     document.body.style.overflowX = 'hidden';
 
-    /* ---------- SEARCH / SUGGESTIONS LOGIC (across months now) ---------- */
+    /* ---------- SEARCH / SUGGESTIONS LOGIC (across months, form submit handles mobile keyboard) ---------- */
 
-    // stopwords/déterminants à ignorer dans the search
+    // stopwords/déterminants to ignore in the search
     const STOPWORDS = new Set([
       'le','la','les','un','une','des','du','de',"d","l","au","aux","à","a","en",
       'ce','cette','ces','mon','ton','son','notre','votre','leur',
@@ -974,6 +985,7 @@
     const suggestionsEl = document.getElementById('suggestions');
     const searchInputEl = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-btn');
+    const searchForm = document.getElementById('search-form');
     let animateTimeout = null;
 
     function clearSuggestions(){
@@ -1078,16 +1090,21 @@
       suggestionsEl.classList.add('visible');
     }
 
-    // wire button + Enter key (no live search)
-    searchBtn.addEventListener('click', (e) => {
+    // Make the form submission handle search — this ensures mobile keyboard "Search" / Enter triggers the same action.
+    searchForm.addEventListener('submit', (e) => {
       e.preventDefault();
       onSearchTriggered(true);
     });
+
+    // Also keep explicit click handler for the visible button (redundant but safe)
+    searchBtn.addEventListener('click', (e) => {
+      // If button is type=submit, form submit handler will already run; prevent double-calls by preventing default here and calling direct.
+      e.preventDefault();
+      onSearchTriggered(true);
+    });
+
+    // Only keep Escape handling on the input (avoid double-calling on Enter because submit handles it)
     searchInputEl.addEventListener('keydown', (e) => {
-      if(e.key === 'Enter'){
-        e.preventDefault();
-        onSearchTriggered(true);
-      }
       if(e.key === 'Escape'){
         searchInputEl.value = '';
         clearSuggestions();
