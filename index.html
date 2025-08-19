@@ -499,13 +499,14 @@
   </style>
 
   <!-- ================= AUTO-RELOAD (polling) =================
-       Garde ça : c'est le fallback qui check /manifest.json toutes les X ms
-       pour détecter un déploiement et appeler reloadSafe().
+       IMPORTANT: this check uses a custom header 'x-skip-sw' to force the SW
+       to perform a real network fetch (network-only). Without that the SW
+       could respond from cache and hide new deploys.
   -->
   <script>
     (function(){
-      const CHECK_URL = '/manifest.json'; // manifest est plus léger et fréquemment mis à jour
-      const INTERVAL_MS = 1 * 1000;   // 1s comme tu voulais
+      const CHECK_URL = '/index.html'; // on check l'index (plus fiable)
+      const INTERVAL_MS = 1 * 1000;   // 1s comme demandé
       let knownTag = null;
       let knownLM = null;
       let knownHash = null;
@@ -519,12 +520,25 @@
         return h.toString(36);
       }
 
+      async function headOrGet(url){
+        // Try HEAD first, then GET. Both include header to bypass SW cache.
+        try {
+          const head = await fetch(url, { method: 'HEAD', cache: 'no-store', headers: { 'x-skip-sw': '1' } });
+          if (head && head.ok) return head;
+        } catch(e){
+          // ignore and fallback to GET
+        }
+        return await fetch(url, { method: 'GET', cache: 'no-store', headers: { 'x-skip-sw': '1' } });
+      }
+
       async function checkOnce(){
         try{
-          let res = await fetch(CHECK_URL, { method: 'HEAD', cache: 'no-store' });
-          if(!res.ok){
-            res = await fetch(CHECK_URL, { method: 'GET', cache: 'no-store' });
+          const res = await headOrGet(CHECK_URL);
+          if(!res || !res.ok){
+            // nothing to do if server errors
+            return;
           }
+
           const etag = res.headers.get('etag');
           const lm = res.headers.get('last-modified');
 
@@ -536,6 +550,7 @@
             knownTag = knownTag || etag;
             return;
           }
+
           if(lm){
             if(knownLM && knownLM !== lm){
               console.log('Auto-reload: Last-Modified changed', knownLM, '→', lm);
@@ -545,21 +560,30 @@
             return;
           }
 
-          if(res.bodyUsed === false){
-            const txt = await res.text();
-            const h = simpleHash(txt);
-            if(knownHash && knownHash !== h){
-              console.log('Auto-reload: body hash changed', knownHash, '→', h);
-              return reloadSafe();
-            }
-            knownHash = knownHash || h;
+          // fallback: read body and compare hash
+          // ensure we have the body (if initial HEAD returned earlier, we need a GET)
+          let txt;
+          try {
+            txt = await res.text();
+          } catch(e){
+            // maybe HEAD returned earlier; force GET
+            const getRes = await fetch(CHECK_URL + '?_fetch=1', { method: 'GET', cache: 'no-store', headers: { 'x-skip-sw': '1' } });
+            if(!getRes || !getRes.ok) return;
+            txt = await getRes.text();
           }
+          const h = simpleHash(txt);
+          if(knownHash && knownHash !== h){
+            console.log('Auto-reload: body hash changed', knownHash, '→', h);
+            return reloadSafe();
+          }
+          knownHash = knownHash || h;
         }catch(err){
           // silent fail
+          // console.warn('checkOnce error', err);
         }
       }
 
-      // reload sécurisé : bypass cache
+      // reload sécurisé : bypass cache en ajoutant timestamp au href
       function reloadSafe(){
         const url = new URL(window.location.href);
         url.searchParams.set('_r', Date.now());
@@ -639,7 +663,7 @@
         </div>
       </div>
 
-      <div id="kra-msg">Là c'est swag nan ?</div>
+      <div id="kra-msg">Alors ça marche</div>
 
     </div>
 
@@ -1428,7 +1452,6 @@
           if (newSW) {
             newSW.addEventListener('statechange', () => {
               console.log('newSW state:', newSW.state);
-              // if it becomes 'activated' there will be controllerchange — we also listen for messages below
             });
           }
         });
@@ -1447,7 +1470,6 @@
             if (window.reloadSafe) window.reloadSafe();
             else window.location.reload();
           } else {
-            // not controlled yet (first install) → ignore
             console.log('SW_UPDATED received but no controller — ignoring (first install).');
           }
         }
@@ -1468,5 +1490,3 @@
   </script>
 </body>
 </html>
-
-
