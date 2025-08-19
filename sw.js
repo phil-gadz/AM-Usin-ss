@@ -6,20 +6,16 @@ const PRECACHE_URLS = [
 ];
 
 self.addEventListener('install', (e) => {
-  // précache basique (optionnel)
   e.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(PRECACHE_URLS).catch(()=>{}))
   );
-  // prendre le contrôle tout de suite
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil((async () => {
-    // nettoyer anciens caches si besoin
     const keys = await caches.keys();
     await Promise.all(keys.map(k => { if (k !== CACHE_NAME) return caches.delete(k); }));
-    // prendre le contrôle des clients
     await self.clients.claim();
     // notifier clients qu'on a mis à jour le service worker
     const all = await self.clients.matchAll({ type: 'window' });
@@ -29,24 +25,34 @@ self.addEventListener('activate', (e) => {
   })());
 });
 
-// stratégie fetch : network-first pour index & manifest; fallback cache.
-// pour le reste : cache-first (puis réseau)
 self.addEventListener('fetch', (e) => {
   try {
+    // If the page requested bypass header, perform a straight network fetch and return it.
+    // This avoids serving a cached manifest/index.html to the polling check.
+    try {
+      const bypass = e.request.headers.get('x-skip-sw');
+      if (bypass === '1') {
+        // network-only for this request
+        e.respondWith(fetch(e.request));
+        return;
+      }
+    } catch(err){
+      // Ignore header access errors and continue to normal handling
+    }
+
     const url = new URL(e.request.url);
     const pathname = url.pathname;
 
-    // network-first for index and manifest (important pour ton check polling)
+    // network-first for index and manifest (important pour le polling)
     if (pathname === '/' || pathname.endsWith('/index.html') || pathname.endsWith('/manifest.json')) {
       e.respondWith((async () => {
         try {
           const netRes = await fetch(e.request);
           // mettre à jour le cache
           const cache = await caches.open(CACHE_NAME);
-          cache.put(e.request, netRes.clone());
+          try { cache.put(e.request, netRes.clone()); } catch(e){/* ignore put errors */ }
           return netRes;
         } catch (err) {
-          // offline fallback to cache
           const cached = await caches.match(e.request);
           if (cached) return cached;
           return new Response('Offline', { status: 503, statusText: 'Offline' });
@@ -60,7 +66,6 @@ self.addEventListener('fetch', (e) => {
       caches.match(e.request).then(cached => {
         if (cached) return cached;
         return fetch(e.request).then(res => {
-          // optionnel : ne pas cacher les réponses cross-origin si tu veux
           const cloned = res.clone();
           caches.open(CACHE_NAME).then(cache => {
             cache.put(e.request, cloned).catch(()=>{});
@@ -70,7 +75,6 @@ self.addEventListener('fetch', (e) => {
       })
     );
   } catch (err) {
-    // sécurité: si URL parsing fail
     e.respondWith(fetch(e.request));
   }
 });
