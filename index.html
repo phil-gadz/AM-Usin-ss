@@ -532,7 +532,89 @@
 
     /* freeze page while modal open: handled via JS (we set top and add class) */
     .modal-open{ position:fixed; left:0; right:0; overflow:hidden; }
-  </style>
+  
+
+/* PAGER RESPONSIVE FIX (v2)
+   - desktop: pager expands up to wide max (keeps centered)
+   - medium: buttons show text
+   - small: buttons collapse to arrows only, label stays centered
+*/
+.pager{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:16px;
+  z-index:3300;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:center;
+  pointer-events:auto;
+  padding:8px;
+  width: min(100%, 1100px);
+  max-width: calc(100% - 48px);
+  box-sizing:border-box;
+  white-space:nowrap;
+  flex-wrap:nowrap;
+}
+
+/* buttons default: allow text (desktop / tablet) */
+.pager .pager-btn{
+  flex:0 0 auto;
+  min-width:64px;
+  padding:8px 12px;
+  height:auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  box-sizing:border-box;
+  text-align:center;
+}
+
+/* arrow-only buttons (add .arrow class to keep them compact) */
+.pager .pager-btn.arrow{
+  min-width:44px;
+  width:44px;
+  height:44px;
+  padding:0;
+}
+
+/* label centered and flexible so arrows never jump */
+.pager #pager-label{
+  flex:1 1 420px;
+  min-width:160px;
+  max-width:70%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:8px 14px;
+  border-radius:10px;
+  box-sizing:border-box;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* small screens: collapse non-arrow text */
+@media (max-width:420px){
+  .pager{ gap:8px; padding:6px; bottom:12px; max-width: calc(100% - 24px); }
+  .pager .pager-btn{ min-width:44px; padding:0 6px; }
+  .pager .pager-btn:not(.arrow) .pager-btn-text{ display:none; } /* hide non-arrow text */
+  .pager #pager-label{ min-width:90px; padding:6px 8px; font-size:0.95rem; }
+}
+
+/* medium / large screens: show button text and increase spacing */
+@media (min-width:900px){
+  .pager{ gap:14px; padding:10px; }
+  .pager .pager-btn .pager-btn-text{ display:inline-block; }
+  .pager .pager-btn{ min-width:90px; padding:10px 14px; }
+  .pager .pager-btn.arrow{ min-width:48px; width:48px; height:48px; }
+  .pager #pager-label{ flex:1 1 560px; min-width:220px; max-width:60%; }
+}
+
+</style>
 
   <!-- ================= AUTO-RELOAD (polling) =================
        IMPORTANT: this check uses a custom header 'x-skip-sw' to force the SW
@@ -709,7 +791,7 @@
         </div>
       </div>
 
-      <div id="kra-msg">Carré dans l'axe</div>
+      <div id="kra-msg">Alors ça marche</div>
 
     </div>
 
@@ -1657,4 +1739,3 @@
   </script>
 </body>
 </html>
-
