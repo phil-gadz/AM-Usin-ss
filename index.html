@@ -85,14 +85,35 @@
     /* variante pour la KRA header : moins haut, plus large (horizontal) */
     .caf-button.kra{
       height:46px;
-      min-width:140px;
-      padding:8px 18px;
+      padding:8px 12px;
       font-size:1rem;
       border-radius:12px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
+      min-width:110px;
+      box-sizing:border-box;
     }
+
+    /* pager boutons spécifiques (bottom paging) */
+    .pager {
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:16px;
+      z-index:3300;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      pointer-events:auto;
+      transition: opacity .28s ease, transform .28s ease;
+      padding:6px;
+    }
+    .pager.visible { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+    .pager.hidden  { opacity:0; transform:translateX(-50%) translateY(8px); pointer-events:none; }
+
+    .pager .pager-btn{ min-width:64px; padding:8px 12px; font-size:0.95rem; border-radius:10px; }
 
     /* === PLACEMENT : bouton AU-DESSUS du titre, centré, espacement soigné === */
     .kra-header{
@@ -106,11 +127,26 @@
       gap:8px; /* espace vertical entre bouton et titre */
     }
 
+    /* Buttons layout: grid for wide screens (4 equal columns), fallback to flex for narrow screens */
     .kra-buttons{
-      display:flex;
+      width:100%;
+      max-width:760px;
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
       gap:12px;
       align-items:center;
-      justify-content:center;
+      justify-items:center;
+    }
+
+    /* On small screens fallback to wrapable flex for a nicer layout */
+    @media (max-width:620px){
+      .kra-buttons{
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:10px;
+      }
+      .caf-button.kra{ min-width:96px; }
     }
 
     .kra-title{
@@ -138,7 +174,7 @@
     }
 
     @media (max-width:420px){
-      .kra-buttons{ gap:8px; flex-wrap:wrap; }
+      .kra-buttons{ gap:8px; }
       .caf-button.kra{
         min-width:96px;
         height:40px;
@@ -612,7 +648,7 @@
   <div class="kra-outer">
     <div class="kra-container" id="kra-container">
       <div class="kra-header">
-        <!-- three buttons: HYMNES - CAF - CHANTS (symétriques) -->
+        <!-- four buttons: HYMNES - CAF - CHANTS - ZAP (symétriques, centrés) -->
         <div class="kra-buttons" role="toolbar" aria-label="Liens rapides">
           <a
             class="caf-button glow kra"
@@ -644,6 +680,16 @@
           >
             <span class="label">CHANTS</span>
           </a>
+
+          <a
+            class="caf-button glow kra"
+            id="zap-btn"
+            href="https://drive.google.com/drive/folders/1uK1CvLjW_IAXa4VJcDYjsvKAXSLeqanS?usp=drive_link"
+            target="_blank" rel="noopener noreferrer"
+            aria-label="Ouvrir le dossier ZAP"
+          >
+            <span class="label">ZAP</span>
+          </a>
         </div>
 
         <div class="kra-title">KRA IMPORT'SS</div>
@@ -663,7 +709,7 @@
         </div>
       </div>
 
-      <div id="kra-msg">On en pense quoi la team ?</div>
+      <div id="kra-msg">Alors ça marche</div>
 
     </div>
 
@@ -681,7 +727,8 @@
           autocomplete="off"
           spellcheck="false"
         >
-        <button id="search-btn" type="submit" class="search-btn caf-button" style="padding:10px 12px; height:44px; border-radius:10px;">Rechercher</button>
+        <!-- glow permanent sur le bouton -->
+        <button id="search-btn" type="submit" class="search-btn caf-button glow" style="padding:10px 12px; height:44px; border-radius:10px;">Rechercher</button>
       </form>
 
       <div id="suggestions" class="suggestions" role="listbox" aria-label="Résultats de la recherche"></div>
@@ -728,6 +775,13 @@
   <div class="overlay" id="overlay"></div>
 
   <div class="footer">224 Corp.</div>
+
+  <!-- pager element (sera piloté par JS) -->
+  <div id="month-pager" class="pager hidden" aria-hidden="true" role="navigation" aria-label="Navigation mois">
+    <button id="pager-prev" class="caf-button kra glow pager-btn" aria-label="Mois précédent">◀</button>
+    <div id="pager-label" style="font-weight:800; padding:6px 10px; border-radius:10px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.04);">—</div>
+    <button id="pager-next" class="caf-button kra glow pager-btn" aria-label="Mois suivant">▶</button>
+  </div>
 
   <script>
     /* ---------- GLITCH ---------- */
@@ -804,14 +858,14 @@
       "2025-09-06":[{time:"",title:"Wix P3",color:"pink"}],
       "2025-09-07":[{time:"",title:"Wix P3",color:"pink"}],
       "2025-09-08":[{time:"20:00",title:"Nuit des Sacqués",color:"blue"}],
-      "2025-09-09":[{time:"Aprem",title:"Essayage Zag",color:"blue"},{time:"20:00",title:"Chalon'ss/Boquette",color:"blue"}],
+      "2025-09-09":[{time:"11:00",title:"Essayage Zag",color:"blue"},{time:"20:00",title:"Chalon'ss/Boquette",color:"blue"}],
       "2025-09-10":[{time:"20:00",title:"Mort des Trad'ss",color:"blue"}],
-      "2025-09-11":[{time:"Aprem",title:"Visiste Learning Center",color:"blue"},{time:"20:00",title:"Manip Banquet",color:"blue"}],
+      "2025-09-11":[{time:"12:00",title:"Visiste Learning Center",color:"blue"},{time:"20:00",title:"Manip Banquet",color:"blue"}],
       "2025-09-12":[{time:"20:00",title:"Prez UAI",color:"blue"}],
-      "2025-09-15":[{time:"20:00",title:"KIN/Clun'ss",color:"blue"}],
+      "2025-09-15":[{time:"20:00",title:"Prez Foy'ss",color:"blue"}],
       "2025-09-16":[{time:"",title:"UAI",color:"yellow",textBlack:true}],
       "2025-09-17":[{time:"Aprem",title:"Solidarité Béthune",color:"blue"},{time:"20:00",title:"Hypo-bucque",color:"blue"}],
-      "2025-09-18":[{time:"20:00",title:"Prez Foy'ss",color:"blue"}],
+      "2025-09-18":[{time:"20:00",title:"KIN/Clun'ss",color:"blue"}],
       "2025-09-19":[{time:"20:00",title:"Déreunssage/Perm'ss/Porte-perm'ss",color:"blue"}],
       "2025-09-22":[{time:"20:00",title:"Birse/P3",color:"blue"}],
       "2025-09-23":[{time:"",title:"UAI",color:"yellow",textBlack:true}],
@@ -819,7 +873,7 @@
       "2025-09-25":[{time:"20:00",title:"Manip Gorg'ss",color:"blue"}],
       "2025-09-26":[{time:"20:00",title:"Lettre à soi-même",color:"blue"}],
       "2025-09-27":[{time:"Soir",title:"Fin'ss Archis Chop'ss",color:"blue"}],
-      "2025-09-28":[{time:"Aprem",title:"Chop'ss",color:"red"}],
+      "2025-09-28":[{time:"13:40",title:"Chop'ss",color:"red"}],
       "2025-09-29":[{time:"20:00",title:"Manip AMJE",color:"blue"}],
       "2025-09-30":[{time:"",title:"UAI",color:"yellow",textBlack:true}],
       /* --- OCTOBRE / NOVEMBRE --- */
@@ -855,7 +909,7 @@
       "2025-11-08":[{time:"",title:"Wix Micro-Par'ss",color:"pink"}],
       "2025-11-09":[{time:"",title:"Wix Micro-Par'ss",color:"pink"}],
       "2025-11-10":[{time:"20:00",title:"Double Pal'ss/Amphi Ayat'ss/Nuit de l'Ours",color:"blue"}],
-      "2025-11-11":[{time:"06:00",title:"Pal'ss Taper la phase",color:"blue"},{time:"12:00",title:"Pal'ss",color:"blue"},{time:"14:00",title:"11 Nov.",color:"blue"},{time:"20:00",title:"Pal'ss dans les Sout'ss/Brûlage de Carn'ss",color:"blue"}],
+      "2025-11-11":[{time:"06:00",title:"Pal'ss Taper la phase",color:"blue"},{time:"12:00",title:"Pal'ss",color:"blue"},{time:"14:00",title:"Cérémonie 11 Nov.",color:"blue"},{time:"20:00",title:"Pal'ss dans les Sout'ss/Brûlage de Carn'ss",color:"blue"}],
       "2025-11-12":[{time:"06:00",title:"Pal'ss rébellion des washs",color:"blue"},{time:"20:00",title:"St El'ss",color:"red"}],
       "2025-11-13":[{time:"Jusqu'au soir",title:"St El'ss",color:"red"},{time:"20:00",title:"Dernière chouille de prom'ss",color:"blue"}],
       "2025-11-14":[{time:"20:00",title:"Fin'ss de remise de fam'ss/Soirée de zocquage",color:"blue"}],
@@ -1060,11 +1114,12 @@
       return s.toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
         .replace(/[^a-z0-9\'\s]+/g,' ') // keep apostrophes for next step
-        .trim();
+        .trim()
+        .replace(/\s+/g,' ');
     }
 
     function stripSsSuffixes(s){
-      return s.replace(/\'?ss\b/g, '').replace(/\bss\b/g,'');
+      return s.replace(/\'?ss\b/g, '').replace(/\bss\b/g,'').replace(/\s+/g,' ').trim();
     }
 
     function tokensFromString(s){
@@ -1090,6 +1145,7 @@
     function clearSuggestions(){
       suggestionsEl.innerHTML = '';
       suggestionsEl.classList.remove('visible');
+      suggestionsEl.setAttribute('aria-hidden','true');
     }
 
     function clearPreviousAnimation(){
@@ -1120,9 +1176,13 @@
     /**
      * onSearchTriggered(showAlertIfNone)
      * - searches across all months in eventsData
-     * - if no match -> alert "Cette manip n'existe pas"
+     * - if no match -> alert "Cette manip n'existe pas" (only when showAlertIfNone === true)
      * - if single match -> automatically switch to that month and animate (no dropdown)
      * - if multiple -> show suggestions dropdown (across months). Clicking an item switches month and animates.
+     *
+     * New behavior: if the user's full normalized query exactly matches an event's normalized full title
+     * (after removing 'ss and normalizing), we treat those matches as the exact set and *don't* return generic
+     * matches that only match on a token (so "Nuit" won't flood the dropdown when an exact title exists).
      */
     function onSearchTriggered(showAlertIfNone = true){
       const raw = searchInputEl.value || '';
@@ -1132,10 +1192,12 @@
         clearPreviousAnimation();
         return;
       }
-      const searchTokens = tokensFromString(q);
+
+      const normQueryFull = stripSsSuffixes(normalizeText(q)); // full normalized query string
+      const queryTokens = tokensFromString(q);
 
       // if only stopwords -> no results
-      if(searchTokens.length === 0){
+      if(queryTokens.length === 0){
         clearSuggestions();
         clearPreviousAnimation();
         if(showAlertIfNone) alert("Cette manip n'existe pas");
@@ -1144,35 +1206,53 @@
 
       // find matches among eventsData (across months)
       const matches = []; // {dateKey, ev}
+      const exactMatches = []; // matches where full normalized title equals full normalized query OR tokens equal
+
       for(const dateKey in eventsData){
         const evs = eventsData[dateKey] || [];
         for(const ev of evs){
           if(!ev || !ev.title) continue;
+          const titleFullNorm = stripSsSuffixes(normalizeText(ev.title)); // normalized full title
           const titleTokens = tokensFromString(ev.title);
-          const matched = searchTokens.some(st => titleTokens.some(tt => tt === st));
+
+          // exact full-string equality OR exact token-sequence equality -> exact match
+          const tokensEqual = titleTokens.join(' ') === queryTokens.join(' ');
+          if(titleFullNorm === normQueryFull || tokensEqual){
+            exactMatches.push({ dateKey, ev });
+            continue; // don't add to general matches to avoid duplicates
+          }
+
+          // otherwise token overlap (partial) -> general match
+          const matched = queryTokens.some(st => titleTokens.some(tt => tt === st));
           if(matched){
             matches.push({ dateKey, ev });
           }
         }
       }
 
-      if(matches.length === 0){
+      // If we have any exact matches, prefer them exclusively (so "Nuit" won't surface unrelateds if exact found)
+      let effectiveMatches = matches;
+      if(exactMatches.length > 0){
+        effectiveMatches = exactMatches;
+      }
+
+      if(effectiveMatches.length === 0){
         clearSuggestions();
         clearPreviousAnimation();
         if(showAlertIfNone) alert("Cette manip n'existe pas");
         return;
       }
 
-      if(matches.length === 1){
+      if(effectiveMatches.length === 1){
         clearSuggestions();
-        const m = matches[0];
+        const m = effectiveMatches[0];
         showEventAcrossMonths(m.dateKey, m.ev.title);
         return;
       }
 
-      // multiple -> build suggestions dropdown (for all months)
+      // multiple -> build suggestions dropdown (for all months) — using effectiveMatches (exact-set if present)
       suggestionsEl.innerHTML = '';
-      matches.forEach((m, idx) => {
+      effectiveMatches.forEach((m, idx) => {
         const item = document.createElement('div');
         item.className = 'item';
         item.setAttribute('role','option');
@@ -1187,6 +1267,7 @@
         suggestionsEl.appendChild(item);
       });
       suggestionsEl.classList.add('visible');
+      suggestionsEl.setAttribute('aria-hidden','false');
     }
 
     // Make the form submission handle search — this ensures mobile keyboard "search" / Enter triggers the same action.
@@ -1199,6 +1280,11 @@
     searchBtn.addEventListener('click', (e) => {
       e.preventDefault();
       onSearchTriggered(true);
+    });
+
+    // --- LIVE suggestions: update on every input (no alert during typing)
+    searchInputEl.addEventListener('input', (e) => {
+      onSearchTriggered(false);
     });
 
     // Only keep Escape handling on the input (avoid double-calling on Enter because submit handles it)
@@ -1224,6 +1310,7 @@
       clearPreviousAnimation();
       onSearchTriggered(false);
       updateNextEventDisplay();
+      updatePagerLabels();
     });
 
     // when cols (layout) change, regenerate and re-run search so suggestions stay relevant
@@ -1241,6 +1328,7 @@
     // defensive hide on resize
     window.addEventListener('resize', () => {
       clearSuggestions();
+      updatePagerVisibility(); // recompute pager visibility too
     });
 
     /* ---------- NEXT EVENT (Prochaine manip) with Europe/Paris timezone & countdown ---------- */
@@ -1353,7 +1441,7 @@
       }
     }
 
-    // countdown formatting
+    // countdown formatting (toujours avec secondes)
     function fmtCountdown(ms){
       if(ms <= 0) return 'à l’instant';
       const totalSec = Math.floor(ms / 1000);
@@ -1361,8 +1449,8 @@
       const hours = Math.floor((totalSec % 86400) / 3600);
       const mins = Math.floor((totalSec % 3600) / 60);
       const secs = totalSec % 60;
-      if(days > 0) return `dans ${days}j ${hours}h ${mins}m`;
-      if(hours > 0) return `dans ${hours}h ${mins}m`;
+      if(days > 0) return `dans ${days}j ${hours}h ${mins}m ${secs}s`;
+      if(hours > 0) return `dans ${hours}h ${mins}m ${secs}s`;
       if(mins > 0) return `dans ${mins}m ${secs}s`;
       return `dans ${secs}s`;
     }
@@ -1429,6 +1517,8 @@
     // Ensure when page loads on small screens the layout is correct
     window.addEventListener('load', ()=> {
       onSearchTriggered(false);
+      updatePagerLabels();
+      updatePagerVisibility();
     });
 
     // small debug helpers
@@ -1437,6 +1527,83 @@
       getNextEvent,
       showEventAcrossMonths
     };
+
+    /* ---------- PAGINATION (apparaît à 2/3 du scroll, centré, label mois au centre) ---------- */
+    const pager = document.getElementById('month-pager');
+    const pagerPrev = document.getElementById('pager-prev');
+    const pagerNext = document.getElementById('pager-next');
+    const pagerLabel = document.getElementById('pager-label');
+
+    function updatePagerLabels(){
+      const opts = Array.from(monthSelect.options);
+      const curIndex = opts.findIndex(o => o.value === monthSelect.value);
+      const prevIndex = Math.max(0, curIndex - 1);
+      const nextIndex = Math.min(opts.length - 1, curIndex + 1);
+      const prevText = opts[prevIndex] ? opts[prevIndex].text : '';
+      const nextText = opts[nextIndex] ? opts[nextIndex].text : '';
+      // show readable label: prev & next with arrows, center shows active month + year
+      pagerPrev.innerText = `◀ ${prevText}`;
+      pagerNext.innerText = `${nextText} ▶`;
+      pagerLabel.innerText = `${opts[curIndex] ? opts[curIndex].text : ''} ${currentYear}`;
+    }
+
+    function setMonthByIndex(index){
+      const opts = Array.from(monthSelect.options);
+      if(!opts[index]) return;
+      monthSelect.value = opts[index].value;
+      generateCalendar(parseInt(monthSelect.value,10), daysPerRow);
+      clearPreviousAnimation();
+      onSearchTriggered(false);
+      updateNextEventDisplay();
+      updatePagerLabels();
+    }
+
+    pagerPrev.addEventListener('click', () => {
+      const opts = Array.from(monthSelect.options);
+      const curIndex = opts.findIndex(o => o.value === monthSelect.value);
+      const prevIndex = Math.max(0, curIndex - 1);
+      setMonthByIndex(prevIndex);
+      // ensure pager stays visible after click
+      updatePagerVisibility();
+    });
+
+    pagerNext.addEventListener('click', () => {
+      const opts = Array.from(monthSelect.options);
+      const curIndex = opts.findIndex(o => o.value === monthSelect.value);
+      const nextIndex = Math.min(opts.length - 1, curIndex + 1);
+      setMonthByIndex(nextIndex);
+      updatePagerVisibility();
+    });
+
+    function scrollProgressFraction(){
+      const doc = document.documentElement;
+      const scrollable = (doc.scrollHeight - window.innerHeight);
+      if(scrollable <= 0) return 1;
+      return window.scrollY / scrollable;
+    }
+
+    function updatePagerVisibility(){
+      // appear when scrolled at least 2/3 of the page
+      const progress = scrollProgressFraction();
+      if(progress >= (2/3)){
+        pager.classList.remove('hidden');
+        pager.classList.add('visible');
+        pager.setAttribute('aria-hidden','false');
+      } else {
+        pager.classList.remove('visible');
+        pager.classList.add('hidden');
+        pager.setAttribute('aria-hidden','true');
+      }
+      updatePagerLabels();
+    }
+
+    window.addEventListener('scroll', () => {
+      updatePagerVisibility();
+    });
+
+    // initial call
+    updatePagerLabels();
+    updatePagerVisibility();
   </script>
 
   <!-- ================= SERVICE WORKER REGISTRATION & HANDLERS ================= -->
@@ -1490,5 +1657,3 @@
   </script>
 </body>
 </html>
-
-
