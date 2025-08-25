@@ -83,17 +83,7 @@
     .caf-button .label { display:inline-block; transform: translateY(-1px); }
 
     /* variante pour la KRA header : moins haut, plus large (horizontal) */
-    .caf-button.kra{
-      height:46px;
-      padding:8px 12px;
-      font-size:1rem;
-      border-radius:12px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-width:110px;
-      box-sizing:border-box;
-    }
+    
 
     /* pager boutons spécifiques (bottom paging) */
     .pager {
@@ -128,15 +118,49 @@
     }
 
     /* Buttons layout: grid for wide screens (4 equal columns), fallback to flex for narrow screens */
-    .kra-buttons{
+    
+.kra-buttons{
       width:100%;
       max-width:760px;
+      margin:0 auto;
       display:grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
+      /* 5 equal columns on desktop to ensure perfect symmetry around the center */
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
       gap:12px;
       align-items:center;
-      justify-items:center;
+      justify-items:stretch; /* buttons stretch to fill each column equally */
+      justify-content:center;
     }
+
+/* Ensure each kra button stretches to fill its grid cell so widths are identical.
+   Limit max-width to avoid overly wide buttons on very large screens. */
+.kra-buttons 
+
+/* Responsive: 3 columns on medium screens (tablet), 2 columns on small screens (mobile),
+   and 1 column on very small screens to keep the block visually centered and balanced. */
+@media (max-width:920px){
+  .kra-buttons{
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
+  }
+  .kra-buttons 
+}
+
+@media (max-width:620px){
+  .kra-buttons{
+    grid-template-columns: repeat(2, minmax(96px, 1fr));
+    gap:10px;
+  }
+  .kra-buttons 
+}
+
+@media (max-width:420px){
+  .kra-buttons{
+    grid-template-columns: repeat(1, minmax(96px, 1fr));
+    gap:8px;
+  }
+  .kra-buttons 
+}
+
 
     /* On small screens fallback to wrapable flex for a nicer layout */
     @media (max-width:620px){
@@ -146,7 +170,7 @@
         justify-content:center;
         gap:10px;
       }
-      .caf-button.kra{ min-width:96px; }
+      
     }
 
     .kra-title{
@@ -164,23 +188,13 @@
 
     /* responsive : réduire la largeur et la hauteur sur écrans moyens */
     @media (max-width:920px){
-      .caf-button.kra{
-        min-width:110px;
-        height:42px;
-        padding:6px 14px;
-        font-size:0.95rem;
-      }
+      
       .kra-header{ padding:10px 10px; gap:6px; }
     }
 
     @media (max-width:420px){
       .kra-buttons{ gap:8px; }
-      .caf-button.kra{
-        min-width:96px;
-        height:40px;
-        padding:6px 10px;
-        font-size:0.88rem;
-      }
+      
       .kra-header{ padding:8px 8px; gap:6px; }
     }
 
@@ -752,6 +766,18 @@
           >
             <span class="label">CAF</span>
           </a>
+          <!-- BOUTON FLYER (inséré automatiquement) -->
+          <a
+            class="caf-button glow kra"
+            id="flyer-btn"
+            href="https://drive.google.com/drive/folders/1zwJkxIPoTwUnUxJcZ6w0CPZwvKGE2y8V?usp=drive_link"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Ouvrir le dossier Flyer sur Google Drive"
+          >
+            <span class="label">FLYER</span>
+          </a>
+
 
           <a
             class="caf-button glow kra"
@@ -791,7 +817,7 @@
         </div>
       </div>
 
-      <div id="kra-msg">SIUUUU</div>
+      <div id="kra-msg">Aucune info pour l'instant.</div>
 
     </div>
 
@@ -1739,4 +1765,3 @@
   </script>
 </body>
 </html>
-
