@@ -628,6 +628,46 @@
   .pager #pager-label{ flex:1 1 560px; min-width:220px; max-width:60%; }
 }
 
+
+/* ================= MOBILE: enlarge kra buttons for legibility ================= */
+@media (max-width:920px){
+  .kra-buttons .caf-button.kra{
+    font-size:1.06rem !important;
+    padding:10px 14px !important;
+    height:48px !important;
+    min-height:48px !important;
+    line-height:1.1 !important;
+  }
+}
+
+@media (max-width:620px){
+  .kra-buttons .caf-button.kra{
+    font-size:1.08rem !important;
+    padding:12px 16px !important;
+    height:52px !important;
+    min-height:52px !important;
+    line-height:1.12 !important;
+  }
+}
+
+@media (max-width:420px){
+  .kra-buttons{
+    grid-template-columns: repeat(1, minmax(120px, 1fr)) !important;
+    gap:10px;
+  }
+  .kra-buttons .caf-button.kra{
+    font-size:1.05rem !important;
+    padding:12px 18px !important;
+    height:56px !important;
+    min-height:56px !important;
+    line-height:1.14 !important;
+    border-radius:12px;
+  }
+  /* ensure the pager and other controls have comfortable tap targets */
+  .pager .pager-btn{ min-width:56px; height:56px; padding:10px; }
+  .search-btn, .next-manip .cta{ min-height:48px; padding:10px 14px; }
+}
+
 </style>
 
   <!-- ================= AUTO-RELOAD (polling) =================
@@ -817,7 +857,7 @@
         </div>
       </div>
 
-      <div id="kra-msg">Aucune info pour l'instant.</div>
+      <div id="kra-msg">SIUUUU</div>
 
     </div>
 
@@ -1765,4 +1805,3 @@
   </script>
 </body>
 </html>
-
