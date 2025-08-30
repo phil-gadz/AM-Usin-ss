@@ -1,22 +1,19 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>AM Usin'ss</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#121212">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="icon" href="/icon-192.jpg" sizes="192x192" type="image/jpeg">
-  <link rel="icon" href="/icon-512.jpg" sizes="512x512" type="image/jpeg">
-  <link rel="apple-touch-icon" href="/apple-touch-icon-180.jpg">
-
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>AM Usin'ss</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="/manifest.json" rel="manifest"/>
+<meta content="#121212" name="theme-color"/>
+<meta content="yes" name="mobile-web-app-capable"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<link href="/icon-192.jpg" rel="icon" sizes="192x192" type="image/jpeg"/>
+<link href="/icon-512.jpg" rel="icon" sizes="512x512" type="image/jpeg"/>
+<link href="/apple-touch-icon-180.jpg" rel="apple-touch-icon"/>
+<style>
     /* ================= BASE ================= */
     * { box-sizing: border-box; --day-padding: 6px; }
     html { box-sizing: border-box; }
@@ -669,13 +666,12 @@
 }
 
 </style>
-
-  <!-- ================= AUTO-RELOAD (polling) =================
+<!-- ================= AUTO-RELOAD (polling) =================
        IMPORTANT: this check uses a custom header 'x-skip-sw' to force the SW
        to perform a real network fetch (network-only). Without that the SW
        could respond from cache and hide new deploys.
   -->
-  <script>
+<script>
     (function(){
       const CHECK_URL = '/index.html'; // on check l'index (plus fiable)
       const INTERVAL_MS = 1 * 1000;   // 1s comme demandé
@@ -771,167 +767,101 @@
       });
     })();
   </script>
-
 </head>
-
 <body>
-  <canvas id="particles"></canvas>
-
-  <div class="logo-container">
-    <img src="data:image/png;base64,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" alt="Logo" class="logo glitch">
-  </div>
-
-  <div class="kra-outer">
-    <div class="kra-container" id="kra-container">
-      <div class="kra-header">
-        <!-- four buttons: HYMNES - CAF - CHANTS - ZAP (symétriques, centrés) -->
-        <div class="kra-buttons" role="toolbar" aria-label="Liens rapides">
-          <a
-            class="caf-button glow kra"
-            id="hymnes-btn"
-            href="https://drive.google.com/drive/folders/1wqX_V6nXPmzf8B4sqDyX04H81YtQn5wn?usp=drive_link"
-            target="_blank" rel="noopener noreferrer"
-            aria-label="Ouvrir le dossier HYMNES"
-          >
-            <span class="label">HYMNES</span>
-          </a>
-
-          <a
-            class="caf-button glow kra"
-            id="caf-btn-kra"
-            href="https://drive.google.com/drive/folders/10BKkNHleIhqUGhCABqkPIw9dKcZGQ9vv?usp=drive_link"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Ouvrir le dossier CAF sur Google Drive"
-          >
-            <span class="label">CAF</span>
-          </a>
-          <!-- BOUTON FLYER (inséré automatiquement) -->
-          <a
-            class="caf-button glow kra"
-            id="flyer-btn"
-            href="https://drive.google.com/drive/folders/1zwJkxIPoTwUnUxJcZ6w0CPZwvKGE2y8V?usp=drive_link"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Ouvrir le dossier Flyer sur Google Drive"
-          >
-            <span class="label">FLYER</span>
-          </a>
-
-
-          <a
-            class="caf-button glow kra"
-            id="chants-btn"
-            href="https://drive.google.com/drive/folders/1MyyjtflzVBngREnS5WHq1667aiZbi0Av?usp=drive_link"
-            target="_blank" rel="noopener noreferrer"
-            aria-label="Ouvrir le dossier CHANTS"
-          >
-            <span class="label">CHANTS</span>
-          </a>
-
-          <a
-            class="caf-button glow kra"
-            id="zap-btn"
-            href="https://drive.google.com/drive/folders/1uK1CvLjW_IAXa4VJcDYjsvKAXSLeqanS?usp=drive_link"
-            target="_blank" rel="noopener noreferrer"
-            aria-label="Ouvrir le dossier ZAP"
-          >
-            <span class="label">ZAP</span>
-          </a>
-        </div>
-
-        <div class="kra-title">KRA IMPORT'SS</div>
-      </div>
-
-      <!-- PROCHAINE MANIP : placé entre le titre KRA et la zone éditable -->
-      <div id="next-manip" class="next-manip" aria-live="polite" role="region">
-        <div class="left">
-          <div class="label">Prochaine manip</div>
-          <div class="title" id="next-title">—</div>
-          <div class="when" id="next-when">—</div>
-        </div>
-
-        <div class="next-right">
-          <div id="next-countdown">—</div>
-          <button id="next-cta" class="cta" title="Voir la manipulation">Voir</button>
-        </div>
-      </div>
-
-      <div id="kra-msg">Bienvenue sur AM Usin'ss.<br>Les bucquages manips arrivent dans la prochaine update.</div>
-
-    </div>
-
-    <!-- SEARCH WRAP: juste en dessous de la case KRA IMPORT'SS -->
-    <div class="search-wrap" aria-label="Recherche des manipulations">
-      <form id="search-form" class="search-row" role="search" autocomplete="off" onsubmit="return false;">
-        <input
-          id="search-input"
-          class="search-input"
-          type="search"
-          placeholder="Rechercher une manip"
-          aria-label="Rechercher une manipulation"
-          enterkeyhint="search"
-          inputmode="search"
-          autocomplete="off"
-          spellcheck="false"
-        >
-        <!-- glow permanent sur le bouton -->
-        <button id="search-btn" type="submit" class="search-btn caf-button glow" style="padding:10px 12px; height:44px; border-radius:10px;">Rechercher</button>
-      </form>
-
-      <div id="suggestions" class="suggestions" role="listbox" aria-label="Résultats de la recherche"></div>
-    </div>
-
-  </div>
-
-  <!-- CONTROLS : title + compact responsive controls -->
-  <div class="controls" role="region" aria-label="Contrôles calendrier">
-    <div class="title-row">
-      <h2 id="month-title">Septembre 2025</h2>
-    </div>
-
-    <div class="calendar-controls" aria-hidden="false">
-      <div class="month-selector">
-        <div class="select-wrap" style="margin:0;">
-          <select id="month-select" aria-label="Choisir le mois">
-            <option value="9" selected>Septembre</option>
-            <option value="10">Octobre</option>
-            <option value="11">Novembre</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="days-selector" style="align-items:center;">
-        <label for="cols-select" style="font-size:0.95rem; color:#ddd; margin-right:6px;">Jours/ligne</label>
-        <div class="select-wrap">
-          <select id="cols-select" aria-label="Nombre de jours par ligne">
-            <option value="3" selected>3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="calendar-wrap">
-    <div class="calendar-container" id="calendar"></div>
-  </div>
-
-  <div class="overlay" id="overlay"></div>
-
-  <div class="footer">224 Corp.</div>
-
-  <!-- pager element (sera piloté par JS) -->
-  <div id="month-pager" class="pager hidden" aria-hidden="true" role="navigation" aria-label="Navigation mois">
-    <button id="pager-prev" class="caf-button kra glow pager-btn" aria-label="Mois précédent">◀</button>
-    <div id="pager-label" style="font-weight:800; padding:6px 10px; border-radius:10px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.04);">—</div>
-    <button id="pager-next" class="caf-button kra glow pager-btn" aria-label="Mois suivant">▶</button>
-  </div>
-
-  <script>
+<canvas id="particles"></canvas>
+<div class="logo-container">
+<img alt="Logo" class="logo glitch" src="data:image/png;base64,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"/>
+</div>
+<div class="kra-outer">
+<div class="kra-container" id="kra-container">
+<div class="kra-header">
+<!-- four buttons: HYMNES - CAF - CHANTS - ZAP (symétriques, centrés) -->
+<div aria-label="Liens rapides" class="kra-buttons" role="toolbar">
+<a aria-label="Ouvrir le dossier HYMNES" class="caf-button glow kra" href="https://drive.google.com/drive/folders/1wqX_V6nXPmzf8B4sqDyX04H81YtQn5wn?usp=drive_link" id="hymnes-btn" rel="noopener noreferrer" target="_blank">
+<span class="label">HYMNES</span>
+</a>
+<a aria-label="Ouvrir le dossier CAF sur Google Drive" class="caf-button glow kra" href="https://drive.google.com/drive/folders/10BKkNHleIhqUGhCABqkPIw9dKcZGQ9vv?usp=drive_link" id="caf-btn-kra" rel="noopener noreferrer" target="_blank">
+<span class="label">CAF</span>
+</a>
+<!-- BOUTON FLYER (inséré automatiquement) -->
+<a aria-label="Ouvrir le dossier Flyer sur Google Drive" class="caf-button glow kra" href="https://drive.google.com/drive/folders/1OpovOD8fAmvqhzU7dyu3TMP2UpFcN8Z-?usp=drive_link" id="flyer-btn" rel="noopener noreferrer" style="display:inline-flex;align-items:center;justify-content:center;text-align:center;" target="_blank">
+<span class="label">Loüpette Usin'ss</span>
+</a>
+<a aria-label="Ouvrir le dossier CHANTS" class="caf-button glow kra" href="https://drive.google.com/drive/folders/1MyyjtflzVBngREnS5WHq1667aiZbi0Av?usp=drive_link" id="chants-btn" rel="noopener noreferrer" target="_blank">
+<span class="label">CHANTS</span>
+</a>
+<a aria-label="Ouvrir le dossier ZAP" class="caf-button glow kra" href="https://drive.google.com/drive/folders/1uK1CvLjW_IAXa4VJcDYjsvKAXSLeqanS?usp=drive_link" id="zap-btn" rel="noopener noreferrer" target="_blank">
+<span class="label">ZAP</span>
+</a>
+</div>
+<div class="kra-title">KRA IMPORT'SS</div>
+</div>
+<!-- PROCHAINE MANIP : placé entre le titre KRA et la zone éditable -->
+<div aria-live="polite" class="next-manip" id="next-manip" role="region">
+<div class="left">
+<div class="label">Prochaine manip</div>
+<div class="title" id="next-title">—</div>
+<div class="when" id="next-when">—</div>
+</div>
+<div class="next-right">
+<div id="next-countdown">—</div>
+<button class="cta" id="next-cta" title="Voir la manipulation">Voir</button>
+</div>
+</div>
+<div id="kra-msg">Bienvenue sur AM Usin'ss.<br/>Les bucquages manips arrivent dans la prochaine update.</div>
+</div>
+<!-- SEARCH WRAP: juste en dessous de la case KRA IMPORT'SS -->
+<div aria-label="Recherche des manipulations" class="search-wrap">
+<form autocomplete="off" class="search-row" id="search-form" onsubmit="return false;" role="search">
+<input aria-label="Rechercher une manipulation" autocomplete="off" class="search-input" enterkeyhint="search" id="search-input" inputmode="search" placeholder="Rechercher une manip" spellcheck="false" type="search"/>
+<!-- glow permanent sur le bouton -->
+<button class="search-btn caf-button glow" id="search-btn" style="padding:10px 12px; height:44px; border-radius:10px;" type="submit">Rechercher</button>
+</form>
+<div aria-label="Résultats de la recherche" class="suggestions" id="suggestions" role="listbox"></div>
+</div>
+</div>
+<!-- CONTROLS : title + compact responsive controls -->
+<div aria-label="Contrôles calendrier" class="controls" role="region">
+<div class="title-row">
+<h2 id="month-title">Septembre 2025</h2>
+</div>
+<div aria-hidden="false" class="calendar-controls">
+<div class="month-selector">
+<div class="select-wrap" style="margin:0;">
+<select aria-label="Choisir le mois" id="month-select">
+<option selected="" value="9">Septembre</option>
+<option value="10">Octobre</option>
+<option value="11">Novembre</option>
+</select>
+</div>
+</div>
+<div class="days-selector" style="align-items:center;">
+<label for="cols-select" style="font-size:0.95rem; color:#ddd; margin-right:6px;">Jours/ligne</label>
+<div class="select-wrap">
+<select aria-label="Nombre de jours par ligne" id="cols-select">
+<option selected="" value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<div class="calendar-wrap">
+<div class="calendar-container" id="calendar"></div>
+</div>
+<div class="overlay" id="overlay"></div>
+<div class="footer">224 Corp.</div>
+<!-- pager element (sera piloté par JS) -->
+<div aria-hidden="true" aria-label="Navigation mois" class="pager hidden" id="month-pager" role="navigation">
+<button aria-label="Mois précédent" class="caf-button kra glow pager-btn" id="pager-prev">◀</button>
+<div id="pager-label" style="font-weight:800; padding:6px 10px; border-radius:10px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.04);">—</div>
+<button aria-label="Mois suivant" class="caf-button kra glow pager-btn" id="pager-next">▶</button>
+</div>
+<script>
     /* ---------- GLITCH ---------- */
     const logoEl = document.querySelector('.logo');
     function triggerGlitch(){
@@ -1000,8 +930,8 @@
       /* --- SEPTEMBRE --- */
       "2025-09-01":[{time:"18:45",title:"Remise des num'ss",color:"blue"},{time:"19:15",title:"Flam'ss",color:"blue"}],
       "2025-09-02":[{time:"12:40",title:"Remise des Zagrises",color:"blue"},{time:"20:00",title:"Prise en m'ss",color:"red"}],
-      "2025-09-03":[{time:"20:00",title:"Nuit du Carn'ss",color:"blue"}],
-      "2025-09-04":[{time:"20:00",title:"Bottage d'oc'ss",color:"blue"}],
+      "2025-09-03":[{time:"20:00",title:"Bottage d'oc'ss",color:"blue"}],
+      "2025-09-04":[{time:"20:00",title:"Nuit du Carn'ss",color:"blue"}],
       "2025-09-05":[{time:"20:00",title:"Fin'ss Archis",color:"blue"}],
       "2025-09-06":[{time:"",title:"Wix P3",color:"pink"}],
       "2025-09-07":[{time:"",title:"Wix P3",color:"pink"}],
@@ -1753,9 +1683,8 @@
     updatePagerLabels();
     updatePagerVisibility();
   </script>
-
-  <!-- ================= SERVICE WORKER REGISTRATION & HANDLERS ================= -->
-  <script>
+<!-- ================= SERVICE WORKER REGISTRATION & HANDLERS ================= -->
+<script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').then(reg => {
         console.log('ServiceWorker registered:', reg);
@@ -1805,4 +1734,3 @@
   </script>
 </body>
 </html>
-
