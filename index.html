@@ -788,7 +788,7 @@
 </a>
 <!-- BOUTON FLYER (inséré automatiquement) -->
 <a aria-label="Ouvrir le dossier Flyer sur Google Drive" class="caf-button glow kra" href="https://drive.google.com/drive/folders/1OpovOD8fAmvqhzU7dyu3TMP2UpFcN8Z-?usp=drive_link" id="flyer-btn" rel="noopener noreferrer" style="display:inline-flex;align-items:center;justify-content:center;text-align:center;" target="_blank">
-<span class="label">Loüpette Usin'ss</span>
+<span class="label">LOÜPETTE USIN'SS</span>
 </a>
 <a aria-label="Ouvrir le dossier CHANTS" class="caf-button glow kra" href="https://drive.google.com/drive/folders/1MyyjtflzVBngREnS5WHq1667aiZbi0Av?usp=drive_link" id="chants-btn" rel="noopener noreferrer" target="_blank">
 <span class="label">CHANTS</span>
@@ -893,8 +893,11 @@
 
     function initParticles(){
       particles = [];
+      // use the canvas's actual client size (CSS pixels) so particles span the full visible area
+      const w = canvas.clientWidth || Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+      const h = canvas.clientHeight || Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
       for(let i=0;i<90;i++){
-        particles.push({ x: Math.random()*window.innerWidth, y: Math.random()*window.innerHeight, size: Math.random()*1.8+0.6, speed: Math.random()*0.35+0.12, opacity: Math.random()*0.5+0.3 });
+        particles.push({ x: Math.random()*w, y: Math.random()*h, size: Math.random()*1.8+0.6, speed: Math.random()*0.35+0.12, opacity: Math.random()*0.5+0.3 });
       }
     }
     function drawParticles(){
@@ -912,7 +915,7 @@
           let dist = Math.sqrt(dx*dx + dy*dy);
           if(dist < 100){ p.x -= dx * 0.002; p.y -= dy * 0.002; }
         }
-        if(p.y < -p.size){ p.y = window.innerHeight + p.size; p.x = Math.random()*window.innerWidth; }
+        if(p.y < -p.size){ p.y = (canvas.clientHeight || Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)) + p.size; p.x = Math.random()*(canvas.clientWidth || Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)); }
       });
       requestAnimationFrame(drawParticles);
     }
